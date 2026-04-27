@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "EtherealPDF (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "EtherealPDF (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
