@@ -122,7 +122,7 @@
                 Background="#335127AD" 
                 Foreground="#74D1FF" 
                 CornerRadius="12" 
-                Width="56" Height="56" 
+                Width="56" Height="56" Padding="0"
                 BorderThickness="0">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
                         <FontIcon Glyph="&#xE8F1;" FontSize="24"/>
@@ -135,7 +135,7 @@
                 Background="Transparent" 
                 Foreground="#BEC8CF" 
                 CornerRadius="12" 
-                Width="56" Height="56" 
+                Width="56" Height="56" Padding="0"
                 BorderThickness="0">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
                         <FontIcon Glyph="&#xE8C3;" FontSize="24"/>
@@ -148,7 +148,7 @@
                 Background="Transparent" 
                 Foreground="#BEC8CF" 
                 CornerRadius="12" 
-                Width="56" Height="56" 
+                Width="56" Height="56" Padding="0"
                 BorderThickness="0">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
                         <FontIcon Glyph="&#xE823;" FontSize="24"/>
@@ -163,7 +163,7 @@
             Background="Transparent" 
             Foreground="#BEC8CF" 
             CornerRadius="12" 
-            Width="56" Height="56" 
+            Width="56" Height="56" Padding="0"
             BorderThickness="0" 
             HorizontalAlignment="Center">
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
