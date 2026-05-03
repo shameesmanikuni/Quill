@@ -32,6 +32,7 @@ namespace EtherealPDF
             // 1. Title bar setup
             ExtendsContentIntoTitleBar = true;
             SetTitleBarButtonColors();
+            CustomizeCaptionButtons();
 
             // 2. Set default active button on startup (fixes the first-launch issue)
             NavButton_Click(LibraryBtn, new RoutedEventArgs());
@@ -109,6 +110,33 @@ namespace EtherealPDF
                 // Keep it consistent when clicked/pressed
                 btn.Resources["ButtonBackgroundPressed"] = _inactiveBgHoverBrush;
                 btn.Resources["ButtonForegroundPressed"] = _inactiveFgBrush;
+            }
+        }
+        private void CustomizeCaptionButtons()
+        {
+            if (AppWindowTitleBar.IsCustomizationSupported())
+            {
+                var titleBar = this.AppWindow.TitleBar;
+
+                // -- 1. Backgrounds --
+                // Set to fully transparent so your XAML AcrylicBrush shows through perfectly
+                titleBar.ButtonBackgroundColor = Colors.Transparent;
+                titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
+
+                // -- Foreground (Icon) Colors --
+                titleBar.ButtonForegroundColor = Color.FromArgb(255, 190, 200, 207);
+                titleBar.ButtonInactiveForegroundColor = Color.FromArgb(255, 100, 100, 100);
+
+                // -- 2. Hover States --
+                // Use a very faint, semi-transparent white (Alpha = 20) 
+                // This gives a subtle highlight while keeping the acrylic visible
+                titleBar.ButtonHoverBackgroundColor = Color.FromArgb(20, 255, 255, 255);
+                titleBar.ButtonHoverForegroundColor = Colors.White;
+
+                // -- 3. Pressed States --
+                // Slightly more opaque white for the click effect (Alpha = 40)
+                titleBar.ButtonPressedBackgroundColor = Color.FromArgb(40, 255, 255, 255);
+                titleBar.ButtonPressedForegroundColor = Colors.White;
             }
         }
     }

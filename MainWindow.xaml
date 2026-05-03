@@ -70,8 +70,6 @@
             </Style>
         </Grid.Resources>
 
-        <!--- Background starts -->
-
         <Ellipse Width="1000" Height="1100"
              HorizontalAlignment="Right" VerticalAlignment="Top"
              Margin="0,-375,-400,0" Opacity="0.1" IsHitTestVisible="False">
@@ -171,6 +169,7 @@
                 </StackPanel>
             </Button>
         </Grid>
+
         <Grid Height="80" 
     VerticalAlignment="Top" 
     Margin="80,0,0,0" 
@@ -199,43 +198,52 @@
         CharacterSpacing="-25" 
         VerticalAlignment="Center"/>
 
-            <Grid Grid.Column="1" Width="448" Margin="48,0,0,0" VerticalAlignment="Center">
+            <Grid Grid.Column="1" Width="448" Margin="80,0,0,0" VerticalAlignment="Center">
+
                 <TextBox Background="#1B1C1C"
-            Foreground="#E5E2E1"
-            FontFamily="{StaticResource InterFont}"
-            PlaceholderText="Search your library..."
-            BorderThickness="1"
-            BorderBrush="Transparent"
-            CornerRadius="24"
-            Padding="48,10,24,10"
-            FontSize="14"
-            VerticalAlignment="Center">
+         Foreground="#E5E2E1"
+         FontFamily="{StaticResource InterFont}"
+         PlaceholderText="Search your library..."
+         BorderThickness="1"
+         BorderBrush="Transparent"
+         CornerRadius="24"
+         Padding="48,10,24,7" 
+         FontSize="14"
+         VerticalAlignment="Center"
+         VerticalContentAlignment="Center">
+    <TextBox.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Default">
+                    <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="#1E1E1E"/>
+                    <SolidColorBrush x:Key="TextControlPlaceholderForegroundFocused" Color="#1E1E1E"/>
+                    <SolidColorBrush x:Key="TextControlPlaceholderForegroundPointerOver" Color="#1E1E1E"/>
 
-                    <TextBox.Resources>
-                        <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="#889299"/>
-                        <SolidColorBrush x:Key="TextControlPlaceholderForegroundFocused" Color="#889299"/>
-                        <SolidColorBrush x:Key="TextControlPlaceholderForegroundPointerOver" Color="#889299"/>
+                    <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="#C1E8FF"/>
+                    <Thickness x:Key="TextControlBorderThemeThicknessFocused">1</Thickness>
 
-                        <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="#C1E8FF"/>
-                        <Thickness x:Key="TextControlBorderThemeThicknessFocused">1</Thickness>
-
-                        <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#202020"/>
-                        <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#1B1C1C"/>
-                    </TextBox.Resources>
-                </TextBox>
+                    <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#202020"/>
+                    <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#1B1C1C"/>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </TextBox.Resources>
+</TextBox>
 
                 <FontIcon Glyph="&#xE71E;" 
-            FontSize="16" 
-            Foreground="#889299" 
-            HorizontalAlignment="Left" 
-            Margin="16,0,0,0"
-            IsHitTestVisible="False"/>
+              FontSize="11" 
+              Foreground="#889299" 
+              HorizontalAlignment="Left" 
+              VerticalAlignment="Center" 
+              Margin="16,0,0,0"
+              IsHitTestVisible="False"/>
             </Grid>
 
             <Button Grid.Column="3" 
         CornerRadius="12"
         BorderThickness="0"
         Padding="20,6,20,6"
+        Margin="0,0,140,0"
         VerticalAlignment="Center"
         FontFamily="{StaticResource InterFont}">
 
