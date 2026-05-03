@@ -12,24 +12,24 @@
 
         <Grid.Resources>
             <Style x:Key="SidebarNavButtonStyle" TargetType="RadioButton">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#BEC8CF"/>
-            <Setter Property="Padding" Value="12,12,12,12"/> 
-            <Setter Property="CornerRadius" Value="12"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="RadioButton">
-                        <Grid x:Name="RootGrid" CornerRadius="{TemplateBinding CornerRadius}" RenderTransformOrigin="0.5,0.5">
-                            <ContentPresenter x:Name="ContentPresenter" 
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="#BEC8CF"/>
+                <Setter Property="Padding" Value="12,12,12,12"/>
+                <Setter Property="CornerRadius" Value="12"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="RadioButton">
+                            <Grid x:Name="RootGrid" CornerRadius="{TemplateBinding CornerRadius}" RenderTransformOrigin="0.5,0.5">
+                                <ContentPresenter x:Name="ContentPresenter" 
                                               Padding="{TemplateBinding Padding}" 
                                               HorizontalAlignment="Center" 
                                               VerticalAlignment="Center" 
                                               Foreground="{TemplateBinding Foreground}"/>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
 
             <Style x:Key="SidebarBottomButtonStyle" TargetType="Button">
                 <Setter Property="Background" Value="Transparent"/>
@@ -69,7 +69,7 @@
                 </Setter>
             </Style>
         </Grid.Resources>
-        
+
         <!--- Background starts -->
 
         <Ellipse Width="1000" Height="1100"
@@ -107,15 +107,14 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0" 
-               Text="EP" 
-               Foreground="#75D1FF" 
-               FontSize="20" 
-               FontWeight="Bold" 
-               HorizontalAlignment="Center" 
-               Margin="0,0,0,48" />
+            <Image Grid.Row="0" 
+                Source="ms-appx:///Assets/logo.png" 
+                Width="56" 
+                Height="56" 
+                HorizontalAlignment="Center" 
+            Margin="0,-16,0,48" />
 
-            <StackPanel Grid.Row="1" Spacing="32" HorizontalAlignment="Center">
+            <StackPanel Grid.Row="1" Spacing="44" HorizontalAlignment="Center">
 
                 <Button x:Name="LibraryBtn" 
                 Click="NavButton_Click"
@@ -169,6 +168,91 @@
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
                     <FontIcon Glyph="&#xE713;" FontSize="24"/>
                     <TextBlock Text="Settings" FontSize="12" FontWeight="Medium" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </Grid>
+        <Grid Height="80" 
+    VerticalAlignment="Top" 
+    Margin="80,0,0,0" 
+    Padding="48,0,48,0">
+
+            <Grid.Background>
+                <AcrylicBrush TintColor="#131313" 
+                      TintOpacity="0.6" 
+                      FallbackColor="#131313" 
+                      TintLuminosityOpacity="0.3"/>
+            </Grid.Background>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0"
+        Text="QUILL"
+        FontSize="48"
+        FontFamily="{StaticResource InterFont}"
+        FontWeight="SemiBold"
+        Foreground="White"
+        CharacterSpacing="-25" 
+        VerticalAlignment="Center"/>
+
+            <Grid Grid.Column="1" Width="448" Margin="48,0,0,0" VerticalAlignment="Center">
+                <TextBox Background="#1B1C1C"
+            Foreground="#E5E2E1"
+            FontFamily="{StaticResource InterFont}"
+            PlaceholderText="Search your library..."
+            BorderThickness="1"
+            BorderBrush="Transparent"
+            CornerRadius="24"
+            Padding="48,10,24,10"
+            FontSize="14"
+            VerticalAlignment="Center">
+
+                    <TextBox.Resources>
+                        <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="#889299"/>
+                        <SolidColorBrush x:Key="TextControlPlaceholderForegroundFocused" Color="#889299"/>
+                        <SolidColorBrush x:Key="TextControlPlaceholderForegroundPointerOver" Color="#889299"/>
+
+                        <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="#C1E8FF"/>
+                        <Thickness x:Key="TextControlBorderThemeThicknessFocused">1</Thickness>
+
+                        <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#202020"/>
+                        <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#1B1C1C"/>
+                    </TextBox.Resources>
+                </TextBox>
+
+                <FontIcon Glyph="&#xE71E;" 
+            FontSize="16" 
+            Foreground="#889299" 
+            HorizontalAlignment="Left" 
+            Margin="16,0,0,0"
+            IsHitTestVisible="False"/>
+            </Grid>
+
+            <Button Grid.Column="3" 
+        CornerRadius="12"
+        BorderThickness="0"
+        Padding="20,6,20,6"
+        VerticalAlignment="Center"
+        FontFamily="{StaticResource InterFont}">
+
+                <Button.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#75D1FF" Offset="0.0" />
+                        <GradientStop Color="#0080A8" Offset="1.0" />
+                    </LinearGradientBrush>
+                </Button.Background>
+
+                <Button.Foreground>
+                    <SolidColorBrush Color="#001E2B" />
+                </Button.Foreground>
+
+                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <FontIcon Glyph="&#xE710;" FontSize="18" FontWeight="Bold" Margin="0,2,0,0"/>
+                    <TextBlock Text="Import" FontSize="16" FontWeight="Bold" FontFamily="{StaticResource InterFont}"/>
                 </StackPanel>
             </Button>
         </Grid>

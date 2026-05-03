@@ -12,7 +12,9 @@
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
             </ResourceDictionary.MergedDictionaries>
 
-            <FontFamily x:Key="SymbolFont">ms-appx:///Assets/symbols.ttf#Material Symbols Outlined</FontFamily>
+            <FontFamily x:Key="SymbolFont">ms-appx:///Assets/Fonts/symbols.ttf#Material Symbols Outlined</FontFamily>
+            <FontFamily x:Key="InterFont">ms-appx:///Assets/Fonts/Inter-VariableFont.ttf#Inter Thin</FontFamily>
+            <FontFamily x:Key="ManropeFont">ms-appx:///Assets/Fonts/Manrope-VariableFont.ttf#Manrope ExtraLight</FontFamily>
 
         </ResourceDictionary>
     </Application.Resources>

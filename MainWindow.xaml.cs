@@ -57,16 +57,16 @@ namespace EtherealPDF
 
         private void NavButton_Click(object sender, RoutedEventArgs e)
         {
-            // Reset all buttons to inactive first
+            // Reset all buttons to inactive
             ResetButtonStyles();
 
             if (sender is Button clickedBtn)
             {
-                // 1. Set the standard Active colors
+                //Standard Active colors
                 clickedBtn.Background = _activeBgBrush;
                 clickedBtn.Foreground = _activeFgBrush;
 
-                // 2. Set the custom Active Hover colors
+                //Active Hover colors
                 clickedBtn.Resources["ButtonBackgroundPointerOver"] = _activeBgHoverBrush;
                 clickedBtn.Resources["ButtonForegroundPointerOver"] = _activeFgBrush;
 
