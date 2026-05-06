@@ -1,12 +1,12 @@
-﻿using EtherealPDF.Models;
-using EtherealPDF.Services;
+﻿using Quill.Models;
+using Quill.Services;
 using Microsoft.UI.Xaml;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace EtherealPDF.ViewModels
+namespace Quill.ViewModels
 {
     public sealed class LibraryViewModel : INotifyPropertyChanged
     {

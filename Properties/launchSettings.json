@@ -1,9 +1,9 @@
 {
   "profiles": {
-    "EtherealPDF (Package)": {
+    "Quill (Package)": {
       "commandName": "MsixPackage"
     },
-    "EtherealPDF (Unpackaged)": {
+    "Quill (Unpackaged)": {
       "commandName": "Project"
     }
   }

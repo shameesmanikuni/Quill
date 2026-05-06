@@ -6,7 +6,7 @@ using Microsoft.UI.Xaml.Media;
 using Windows.UI;
 using System;
 
-namespace EtherealPDF
+namespace Quill
 {
     public sealed partial class MainWindow : Window
     {
@@ -146,7 +146,7 @@ namespace EtherealPDF
             try
             {
                 var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
-                var newBook = await EtherealPDF.Services.LibraryService.Instance.ImportBookAsync(hwnd);
+                var newBook = await Quill.Services.LibraryService.Instance.ImportBookAsync(hwnd);
 
                 if (newBook != null)
                 {

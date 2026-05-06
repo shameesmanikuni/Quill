@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 
-namespace EtherealPDF.Models
+namespace Quill.Models
 {
     public class Book : INotifyPropertyChanged
     {

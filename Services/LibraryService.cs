@@ -1,4 +1,4 @@
-﻿using EtherealPDF.Models;
+﻿using Quill.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Windows.Storage.Pickers;
 
-namespace EtherealPDF.Services
+namespace Quill.Services
 {
     public sealed class LibraryService
     {
@@ -28,7 +28,7 @@ namespace EtherealPDF.Services
         private string GetAppBasePath()
         {
             string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            return Path.Combine(localAppData, "EtherealPDF");
+            return Path.Combine(localAppData, "Quill");
         }
 
         // ── Public API ───────────────────────────────────────────────────────
