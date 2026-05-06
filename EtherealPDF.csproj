@@ -16,6 +16,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Assets\logo.png" />
+    <None Remove="Pages\LibraryPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -54,6 +55,11 @@
     <Content Update="Assets\Fonts\symbols.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\LibraryPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <!--

@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="#131313">
+    <Grid x:Name="RootGrid" Background="#131313">
 
         <Grid.Resources>
             <Style x:Key="SidebarNavButtonStyle" TargetType="RadioButton">
@@ -170,6 +170,8 @@
             </Button>
         </Grid>
 
+        <Frame x:Name="ContentFrame" Margin="80,0,0,0"/>
+        
         <Grid Height="80" 
     VerticalAlignment="Top" 
     Margin="80,0,0,0" 
@@ -240,7 +242,8 @@
               IsHitTestVisible="False"/>
             </Grid>
 
-            <Button Grid.Column="2" 
+            <Button Grid.Column="2"
+                    Click="ImportButton_Click"
     HorizontalAlignment="Right"
     Height="35"
     Margin="0,0,24,0"

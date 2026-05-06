@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Windows.UI;
+using System;
 
 namespace EtherealPDF
 {
@@ -35,7 +36,7 @@ namespace EtherealPDF
             CustomizeCaptionButtons();
 
             // 2. Set default active button on startup (fixes the first-launch issue)
-            NavButton_Click(LibraryBtn, new RoutedEventArgs());
+            RootGrid.Loaded += MainWindow_Loaded;
         }
 
         private void SetTitleBarButtonColors()
@@ -79,6 +80,7 @@ namespace EtherealPDF
                 switch (clickedBtn.Name)
                 {
                     case "LibraryBtn":
+                        ContentFrame.Navigate(typeof(Pages.LibraryPage));
                         break;
                     case "ReadingBtn":
                         break;
@@ -138,6 +140,32 @@ namespace EtherealPDF
                 titleBar.ButtonPressedBackgroundColor = Color.FromArgb(40, 255, 255, 255);
                 titleBar.ButtonPressedForegroundColor = Colors.White;
             }
+        }
+        private async void ImportButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+                var newBook = await EtherealPDF.Services.LibraryService.Instance.ImportBookAsync(hwnd);
+
+                if (newBook != null)
+                {
+                    if (ContentFrame.Content is Pages.LibraryPage libraryPage)
+                    {
+                        libraryPage.RefreshAfterImport();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // In the future, you could show a ContentDialog here with the error message
+                System.Diagnostics.Debug.WriteLine($"Import failed: {ex.Message}");
+            }
+        }
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Set default active button on startup safely
+            NavButton_Click(LibraryBtn, new RoutedEventArgs());
         }
     }
 }
