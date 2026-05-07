@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 
 namespace Quill.Pages
 {
-    // Wrapper class for virtualization
     public class PdfPageItem : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -26,25 +25,29 @@ namespace Quill.Pages
         public bool IsLoading
         {
             get => _isLoading;
-            set {
+            set
+            {
                 _isLoading = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsLoading)));
-                // ALSO notify the UI that the Visibility changed!
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LoadingVisibility)));
+                OnPropertyChanged(nameof(IsLoading));
+                OnPropertyChanged(nameof(LoadingVisibility));
             }
         }
-        public Microsoft.UI.Xaml.Visibility LoadingVisibility =>
-            IsLoading ? Microsoft.UI.Xaml.Visibility.Visible : Microsoft.UI.Xaml.Visibility.Collapsed;
+
+        public Visibility LoadingVisibility =>
+            IsLoading ? Visibility.Visible : Visibility.Collapsed;
 
         private ImageSource? _imageSrc;
         public ImageSource? ImageSrc
         {
             get => _imageSrc;
-            set { _imageSrc = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ImageSrc))); }
+            set { _imageSrc = value; OnPropertyChanged(nameof(ImageSrc)); }
         }
 
         public bool HasRendered { get; set; } = false;
         public string TempFilePath { get; set; } = string.Empty;
+
+        protected void OnPropertyChanged(string name) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
     public sealed partial class ReaderPage : Page
@@ -55,7 +58,6 @@ namespace Quill.Pages
         private string _tempDir = string.Empty;
         private CancellationTokenSource? _cts;
 
-        // Single PDF Document reference & lock
         private MuPDF.NET.Document? _pdfDoc;
         private readonly object _pdfLock = new object();
 
@@ -68,13 +70,27 @@ namespace Quill.Pages
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+
+            // Enter Immersive Mode (Ensure you updated MainWindow with the SetReaderMode method)
             MainWindow.Instance?.SetReaderMode(true);
 
             if (e.Parameter is Book book)
             {
                 _currentBook = book;
                 BookTitleLabel.Text = book.Title;
+
                 await InitializePdfAsync(book.FilePath);
+
+                // FIX: Auto-jump to the last saved page using StartBringIntoView
+                if (_currentBook.LastPageRead > 0 && _currentBook.LastPageRead < VirtualPages.Count)
+                {
+                    // A small delay ensures the repeater has laid out its basic structure
+                    await Task.Delay(200);
+
+                    // The correct way to scroll an ItemsRepeater to an index:
+                    var element = PageRepeater.GetOrCreateElement((int)_currentBook.LastPageRead);
+                    element.StartBringIntoView();
+                }
             }
         }
 
@@ -84,7 +100,6 @@ namespace Quill.Pages
             _tempDir = Path.Combine(Path.GetTempPath(), "QuillReader", Guid.NewGuid().ToString());
             Directory.CreateDirectory(_tempDir);
 
-            // FIX: Capture the UI dispatcher BEFORE going to the background thread
             var dispatcher = this.DispatcherQueue;
 
             try
@@ -96,10 +111,10 @@ namespace Quill.Pages
                     _pdfDoc = new MuPDF.NET.Document(filePath);
                     int count = _pdfDoc.PageCount;
 
+                    // Standard aspect ratio placeholders
                     double defaultWidth = 800;
                     double defaultHeight = 1130;
 
-                    // FIX: Use the captured dispatcher
                     dispatcher.TryEnqueue(() =>
                     {
                         for (int i = 0; i < count; i++)
@@ -112,60 +127,56 @@ namespace Quill.Pages
                                 TempFilePath = Path.Combine(_tempDir, $"page_{i}.png")
                             });
                         }
-                        PageIndicator.Text = $"{count} Pages";
+                        // Initial indicator setup
+                        PageIndicator.Text = $"Page {(_currentBook?.LastPageRead ?? 0) + 1} of {count}";
                     });
                 });
             }
             catch (Exception ex)
             {
                 PageIndicator.Text = "Failed to open PDF.";
-                System.Diagnostics.Debug.WriteLine(ex.Message);
+                System.Diagnostics.Debug.WriteLine($"PDF Init Error: {ex.Message}");
             }
         }
 
-        // Triggered automatically when you scroll and the dummy Grid becomes visible
-        // Triggered automatically by the ItemsRepeater right before a page scrolls into view
         private void PageRepeater_ElementPrepared(ItemsRepeater sender, ItemsRepeaterElementPreparedEventArgs args)
         {
-            // args.Index guarantees we get the exact page number being shown on screen right now!
             if (args.Index >= 0 && args.Index < VirtualPages.Count)
             {
                 UpdateRenderWindow(args.Index);
+
+                // Update the Book model in real-time as the user scrolls
+                if (_currentBook != null)
+                {
+                    _currentBook.LastPageRead = args.Index;
+                    // Mark progress date so it moves to the front of "Continue Reading"
+                    _currentBook.LastReadDate = DateTime.Now;
+
+                    PageIndicator.Text = $"Page {args.Index + 1} of {VirtualPages.Count}";
+                }
             }
         }
 
-        // --- NEW: Sliding Window Memory Management ---
         private void UpdateRenderWindow(int centerPage)
         {
             int totalPages = VirtualPages.Count;
-
-            // Render Window: 2 behind, current, 2 in front (Total 5)
             int renderStart = Math.Max(0, centerPage - 2);
             int renderEnd = Math.Min(totalPages - 1, centerPage + 2);
-
-            // Keep-Alive Buffer: Give it a slightly wider buffer (+/- 3) for unloading RAM
-            // to prevent the image from flickering if you slowly scroll up and down by 1 page.
             int keepStart = Math.Max(0, centerPage - 3);
             int keepEnd = Math.Min(totalPages - 1, centerPage + 3);
 
             for (int i = 0; i < totalPages; i++)
             {
                 var page = VirtualPages[i];
-
-                // 1. Render pages in the 5-page window
                 if (i >= renderStart && i <= renderEnd)
                 {
                     if (!page.HasRendered && !page.IsLoading)
-                    {
                         _ = RenderSpecificPageAsync(page);
-                    }
                 }
-                // 2. Unload pages strictly outside the keep-alive window
                 else if (i < keepStart || i > keepEnd)
                 {
                     if (page.HasRendered)
                     {
-                        // Instantly frees the RAM! 
                         page.ImageSrc = null;
                         page.HasRendered = false;
                         page.IsLoading = false;
@@ -178,8 +189,6 @@ namespace Quill.Pages
         {
             item.IsLoading = true;
             var token = _cts?.Token ?? CancellationToken.None;
-
-            // FIX: Capture the UI dispatcher BEFORE going to the background thread
             var dispatcher = this.DispatcherQueue;
 
             await Task.Run(() =>
@@ -193,18 +202,15 @@ namespace Quill.Pages
                         lock (_pdfLock)
                         {
                             if (token.IsCancellationRequested || _pdfDoc == null) return;
-
                             using MuPDF.NET.Page pdfPage = _pdfDoc[item.PageNumber];
                             MuPDF.NET.Matrix matrix = new MuPDF.NET.Matrix(2.5f, 2.5f);
                             using MuPDF.NET.Pixmap pixmap = pdfPage.GetPixmap(matrix);
-
                             pixmap.Save(item.TempFilePath);
                         }
                     }
 
                     if (!token.IsCancellationRequested)
                     {
-                        // FIX: Use the captured dispatcher
                         dispatcher.TryEnqueue(() =>
                         {
                             string uriPath = $"file:///{item.TempFilePath.Replace('\\', '/')}";
@@ -216,40 +222,39 @@ namespace Quill.Pages
                 }
                 catch
                 {
-                    // FIX: Use the captured dispatcher
                     dispatcher.TryEnqueue(() => item.IsLoading = false);
                 }
             });
         }
 
-        private void BackButton_Click(object sender, RoutedEventArgs e)
+        private async void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            // 1. Instantly kill all queued rendering tasks
+            // 1. Immediately kill background rendering
             _cts?.Cancel();
 
-            // 2. Clear UI memory
-            VirtualPages.Clear();
-            PageRepeater.ItemsSource = null;
+            // 2. Persist the current progress to the service before navigating away
+            if (_currentBook != null)
+            {
+                _currentBook.LastReadDate = DateTime.Now;
+                await Quill.Services.LibraryService.Instance.UpdateBookAsync(_currentBook);
+            }
 
-            // 3. Free MuPDF memory
+            // 3. Free MuPDF resources
             _pdfDoc?.Dispose();
+            _pdfDoc = null;
 
-            // 4. Delete the huge temporary files folder from your disk
+            // 4. Cleanup temporary image files
             try
             {
                 if (Directory.Exists(_tempDir))
-                {
                     Directory.Delete(_tempDir, true);
-                }
             }
-            catch { /* Ignore file lock exceptions if a thread was mid-save */ }
+            catch { /* Ignore locks if thread was finishing a save */ }
 
-            // 5. Restore App UI and go back
+            // 5. Restore Side/Top bars and navigate back
             MainWindow.Instance?.SetReaderMode(false);
             if (Frame.CanGoBack)
-            {
                 Frame.GoBack();
-            }
         }
     }
 }

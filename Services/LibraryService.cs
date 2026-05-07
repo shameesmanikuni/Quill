@@ -58,11 +58,16 @@ namespace Quill.Services
         public List<Book> GetAllBooks() => _books.OrderByDescending(b => b.DateAdded).ToList();
 
         // Limit changed to 3 as requested for the Continue Reading section
-        public List<Book> GetRecentBooks(int count = 3) => _books
-               .Where(b => b.HasBeenRead)
-               .OrderByDescending(b => b.LastReadDate ?? b.DateAdded)
-               .Take(count)
-               .ToList();
+        // Update this method in LibraryService.cs
+        public List<Book> GetRecentBooks(int count = 3)
+        {
+            return _books
+                   .Where(b => b.HasBeenRead)
+                   // Sort by LastReadDate descending so the newest is always index 0 (left-most)
+                   .OrderByDescending(b => b.LastReadDate ?? DateTime.MinValue)
+                   .Take(count)
+                   .ToList();
+        }
 
         //public async Task<Book?> ImportBookAsync(nint windowHandle)
         //{
