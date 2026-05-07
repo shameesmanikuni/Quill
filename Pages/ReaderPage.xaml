@@ -15,7 +15,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Background="#1B1B1C" Padding="12,0,12,0">
+        <Grid Grid.Row="0" Background="#131313" Padding="12,0,12,0" Canvas.ZIndex="10">
             <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
                 <Button Click="BackButton_Click" 
                         Background="Transparent" 
@@ -27,7 +27,9 @@
                            Foreground="White" 
                            FontSize="16" 
                            FontWeight="SemiBold" 
-                           VerticalAlignment="Center"/>
+                           VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis"
+                           MaxWidth="400"/>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="8">
@@ -40,18 +42,34 @@
                       VerticalScrollMode="Enabled" 
                       HorizontalScrollMode="Disabled" 
                       Background="#0E0E0E">
-            <ItemsRepeater x:Name="PageRepeater">
+
+            <ItemsRepeater x:Name="PageRepeater" ElementPrepared="PageRepeater_ElementPrepared">
                 <ItemsRepeater.Layout>
-                    <StackLayout Spacing="20"/>
+                    <StackLayout Spacing="24"/>
                 </ItemsRepeater.Layout>
-                <DataTemplate x:DataType="ImageSource">
-                    <Image Source="{x:Bind}" 
-                           Stretch="Uniform" 
-                           HorizontalAlignment="Center" 
-                           Margin="0,20,0,20"
-                           MaxWidth="1000"/>
+
+                <DataTemplate x:DataType="local:PdfPageItem">
+
+                    <Grid Width="{x:Bind PageWidth}" 
+                          Height="{x:Bind PageHeight}" 
+                          Margin="0,20,0,20" 
+                          Background="#1B1C1C"
+                          CornerRadius="4">
+
+                        <ProgressRing IsActive="{x:Bind IsLoading, Mode=OneWay}" 
+                                      Foreground="#5127AD" 
+                                      Width="40" Height="40" 
+                                      HorizontalAlignment="Center" 
+                                      VerticalAlignment="Center"/>
+
+                        <Image Source="{x:Bind ImageSrc, Mode=OneWay}" 
+                               Stretch="Uniform" 
+                               HorizontalAlignment="Center"/>
+                    </Grid>
+
                 </DataTemplate>
             </ItemsRepeater>
+
         </ScrollViewer>
     </Grid>
 </Page>

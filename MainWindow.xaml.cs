@@ -12,7 +12,7 @@ namespace Quill
     public sealed partial class MainWindow : Window
     {
         // 1. Singleton instance so ReaderPage can hide the Navigation UI
-        public static MainWindow Instance { get; private set; }
+        public static MainWindow? Instance { get; private set; }
 
         private readonly SolidColorBrush _activeBgBrush = new SolidColorBrush(Color.FromArgb(51, 81, 39, 173));
         private readonly SolidColorBrush _activeBgHoverBrush = new SolidColorBrush(Color.FromArgb(80, 81, 39, 173));
