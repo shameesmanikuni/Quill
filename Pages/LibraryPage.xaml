@@ -23,11 +23,13 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Grid x:Name="RootGrid" CornerRadius="16" RenderTransformOrigin="0.5,1">
+
+                        <Grid x:Name="RootGrid" CornerRadius="16" RenderTransformOrigin="0.5,1" UseLayoutRounding="False">
 
                             <Grid.RenderTransform>
                                 <TranslateTransform x:Name="CardLift"/>
                             </Grid.RenderTransform>
+
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup x:Name="CommonStates">
                                     <VisualState x:Name="Normal">
@@ -52,9 +54,10 @@
                             </VisualStateManager.VisualStateGroups>
 
                             <Border Background="#202020" CornerRadius="16"/>
-                            <Border x:Name="HoverOverlay" Background="White" Opacity="0" CornerRadius="16" IsHitTestVisible="False"/>
-                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
 
+                            <Border x:Name="HoverOverlay" Background="White" Opacity="0" CornerRadius="16" IsHitTestVisible="False"/>
+
+                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -71,11 +74,13 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Grid x:Name="RootGrid" RenderTransformOrigin="0.5,1">
+
+                        <Grid x:Name="RootGrid" RenderTransformOrigin="0.5,1" UseLayoutRounding="False">
 
                             <Grid.RenderTransform>
                                 <TranslateTransform x:Name="CardLift"/>
                             </Grid.RenderTransform>
+
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup x:Name="CommonStates">
                                     <VisualState x:Name="Normal">
@@ -101,6 +106,7 @@
                             </VisualStateManager.VisualStateGroups>
 
                             <Border x:Name="HoverOverlay" Background="White" Opacity="0" CornerRadius="12" IsHitTestVisible="False" Canvas.ZIndex="5"/>
+
                             <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"/>
 
                             <Button x:Name="MoreButton" Opacity="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,8,8,0" Background="#CC000000" Width="32" Height="32" CornerRadius="8" Canvas.ZIndex="10">
@@ -149,7 +155,7 @@
                             </VisualStateManager.VisualStateGroups>
 
                             <Border Background="#2A2A2A" Opacity="0.8" CornerRadius="24"/>
-                            <Border x:Name="HoverOverlay" Background="White" Opacity="0" CornerRadius="24"/>
+                            <Border x:Name="HoverOverlay" Background="White" Opacity="0" CornerRadius="24" IsHitTestVisible="False"/>
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Grid>
                     </ControlTemplate>
@@ -198,7 +204,7 @@
                             </VisualStateManager.VisualStateGroups>
 
                             <Border Background="#1B1C1C" CornerRadius="8"/>
-                            <Border x:Name="HoverOverlay" Background="White" Opacity="0" CornerRadius="8"/>
+                            <Border x:Name="HoverOverlay" Background="White" Opacity="0" CornerRadius="8" IsHitTestVisible="False"/>
                             <ContentPresenter x:Name="ContentPresenter" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{TemplateBinding Foreground}"/>
                         </Grid>
                     </ControlTemplate>

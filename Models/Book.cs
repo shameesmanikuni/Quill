@@ -34,19 +34,31 @@ namespace Quill.Models
             }
         }
 
+        // 1. Create a private variable to hold the image in memory
+        private BitmapImage? _coverBitmap;
+
         [JsonIgnore]
         public ImageSource? CoverImage
         {
             get
             {
                 if (!HasValidCover) return null;
-                try
+
+                // 2. Only create the image if we haven't already!
+                if (_coverBitmap == null)
                 {
-                    // FIX: WinUI 3 requires strict URIs for local disk images!
-                    string uriPath = $"file:///{CoverPath.Replace('\\', '/')}";
-                    return new BitmapImage(new Uri(uriPath));
+                    try
+                    {
+                        string uriPath = $"file:///{CoverPath.Replace('\\', '/')}";
+                        _coverBitmap = new BitmapImage();
+                        _coverBitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+                        _coverBitmap.UriSource = new Uri(uriPath);
+                    }
+                    catch { return null; }
                 }
-                catch { return null; }
+
+                // 3. Return the exact same image every time WinUI asks for it
+                return _coverBitmap;
             }
         }
 

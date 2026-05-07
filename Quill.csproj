@@ -18,6 +18,7 @@
     <None Remove="Assets\logo.png" />
     <None Remove="Pages\LibraryPage.xaml" />
     <None Remove="Pages\ReaderPage.xaml" />
+    <None Remove="Pages\RecentsPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -57,6 +58,11 @@
     <Content Update="Assets\Fonts\symbols.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\RecentsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\ReaderPage.xaml">

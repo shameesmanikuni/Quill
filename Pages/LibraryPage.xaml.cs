@@ -30,6 +30,7 @@ namespace Quill.Pages
         public LibraryPage()
         {
             this.InitializeComponent();
+            this.NavigationCacheMode = Microsoft.UI.Xaml.Navigation.NavigationCacheMode.Required;
         }
 
         /// <summary>
@@ -127,11 +128,14 @@ namespace Quill.Pages
             }
         }
 
-        private void BookCard_Click(object sender, RoutedEventArgs e)
+        private async void BookCard_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.Tag is Quill.Models.Book book)
             {
-                // Navigate to the reader with the book object
+                // NEW: Yield the UI thread for 50ms so the button's "Pressed" visual animation can finish smoothly!
+                await System.Threading.Tasks.Task.Delay(50);
+
+                // Navigate to the reader
                 this.Frame.Navigate(typeof(Quill.Pages.ReaderPage), book);
             }
         }

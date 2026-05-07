@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Quill.Pages.RecentsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Quill.Pages"
+    xmlns:models="using:Quill.Models"
+    Background="Transparent">
+
+    <Page.Resources>
+        <Style x:Key="RecentCardStyle" TargetType="Button">
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Top"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="RootGrid" RenderTransformOrigin="0.5,1" UseLayoutRounding="False">
+                            <Grid.RenderTransform>
+                                <TranslateTransform x:Name="CardLift"/>
+                            </Grid.RenderTransform>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="CardLift" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="HoverOverlay" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="PointerOver">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="CardLift" Storyboard.TargetProperty="Y" To="-8" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="HoverOverlay" Storyboard.TargetProperty="Opacity" To="0.04" Duration="0:0:0.15"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="CardLift" Storyboard.TargetProperty="Y" To="-2" Duration="0:0:0.05"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+
+                            <Border x:Name="HoverOverlay" Background="White" Opacity="0" CornerRadius="12" IsHitTestVisible="False" Canvas.ZIndex="5"/>
+                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
+    <ScrollViewer VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Disabled">
+        <StackPanel Padding="48,128,48,80" Spacing="48">
+
+            <TextBlock Text="Recents" FontFamily="{StaticResource ManropeFont}" FontSize="36" FontWeight="ExtraBold" Foreground="White" />
+
+            <Border Visibility="{x:Bind ViewModel.EmptyVisibility, Mode=OneWay}" Padding="48,64,48,64">
+                <StackPanel HorizontalAlignment="Center" Spacing="20">
+                    <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xEA19;" FontSize="64" Foreground="#303840" HorizontalAlignment="Center"/>
+                    <TextBlock Text="No recent books" FontSize="22" FontWeight="Bold" Foreground="#505860" HorizontalAlignment="Center" FontFamily="{StaticResource ManropeFont}"/>
+                    <TextBlock Text="Books you open will appear here" FontSize="14" Foreground="#383E46" HorizontalAlignment="Center" FontFamily="{StaticResource InterFont}"/>
+                </StackPanel>
+            </Border>
+
+            <ItemsRepeater ItemsSource="{x:Bind ViewModel.RecentBooks, Mode=OneWay}" Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}">
+                <ItemsRepeater.Layout>
+                    <UniformGridLayout MinItemWidth="180" MinColumnSpacing="32" MinRowSpacing="48" ItemsStretch="Fill"/>
+                </ItemsRepeater.Layout>
+
+                <DataTemplate x:DataType="models:Book">
+                    <Button Style="{StaticResource RecentCardStyle}" Click="BookCard_Click" Tag="{x:Bind}">
+                        <StackPanel Spacing="0">
+
+                            <Grid Height="240" CornerRadius="12" Background="#1B1C1C">
+                                <Border Visibility="{x:Bind PlaceholderVisibility, Mode=OneWay}" CornerRadius="12">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#1A2D5A" Offset="0.0"/>
+                                            <GradientStop Color="#5127AD" Offset="0.6"/>
+                                            <GradientStop Color="#0080A8" Offset="1.0"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <TextBlock Text="{x:Bind Title}" FontFamily="{StaticResource ManropeFont}" FontSize="40" Opacity="0.2" FontWeight="Black" HorizontalAlignment="Center" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxLines="1"/>
+                                </Border>
+                                <Border Visibility="{x:Bind CoverVisibility, Mode=OneWay}" CornerRadius="12">
+                                    <Border.Background>
+                                        <ImageBrush ImageSource="{x:Bind CoverImage, Mode=OneWay}" Stretch="UniformToFill"/>
+                                    </Border.Background>
+                                </Border>
+                            </Grid>
+
+                            <TextBlock Text="{x:Bind Title, Mode=OneWay}" 
+                                       Height="44" Margin="0,14,0,4"
+                                       FontSize="14" FontWeight="Bold" Foreground="#E5E2E1" FontFamily="{StaticResource InterFont}"
+                                       TextWrapping="Wrap" MaxLines="2" TextTrimming="WordEllipsis"/>
+                        </StackPanel>
+                    </Button>
+                </DataTemplate>
+            </ItemsRepeater>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

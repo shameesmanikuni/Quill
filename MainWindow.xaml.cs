@@ -87,6 +87,9 @@ namespace Quill
                     case "LibraryBtn":
                         ContentFrame.Navigate(typeof(Pages.LibraryPage));
                         break;
+                    case "RecentsBtn":
+                        ContentFrame.Navigate(typeof(Pages.RecentsPage));
+                        break;
                 }
 
                 VisualStateManager.GoToState(clickedBtn, "Normal", false);
