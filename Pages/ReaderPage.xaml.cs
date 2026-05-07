@@ -7,14 +7,16 @@ using Quill.Models;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Quill.Pages
 {
-    public sealed partial class ReaderPage : Page // This 'Page' stays as the WinUI Page
+    public sealed partial class ReaderPage : Page
     {
         public ObservableCollection<ImageSource> RenderedPages { get; } = new();
         private Book? _currentBook;
+        private CancellationTokenSource? _cts; // Token to cancel rendering
 
         public ReaderPage()
         {
@@ -25,6 +27,10 @@ namespace Quill.Pages
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+
+            // Hide the global Sidebar and Topbar completely
+            MainWindow.Instance?.SetReaderMode(true);
+
             if (e.Parameter is Book book)
             {
                 _currentBook = book;
@@ -35,14 +41,14 @@ namespace Quill.Pages
 
         private async Task LoadPdfAsync(string filePath)
         {
-            // Capture the UI thread so background tasks can talk to the screen safely
+            _cts = new CancellationTokenSource();
+            var token = _cts.Token;
             var dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
             try
             {
                 dispatcher.TryEnqueue(() => PageIndicator.Text = "Loading PDF...");
 
-                // Create a temporary cache directory
                 string tempDir = Path.Combine(Path.GetTempPath(), "QuillReader", Guid.NewGuid().ToString());
                 Directory.CreateDirectory(tempDir);
 
@@ -53,20 +59,25 @@ namespace Quill.Pages
 
                     for (int i = 0; i < count; i++)
                     {
+                        // INSTANT ABORT: Check if user pressed Back Button
+                        if (token.IsCancellationRequested) break;
+
                         using MuPDF.NET.Page pdfPage = doc[i];
 
-                        // We will remove the Matrix scaling entirely for this test to 
-                        // guarantee we don't have any MuPDF API version conflicts.
-                        using MuPDF.NET.Pixmap pixmap = pdfPage.GetPixmap();
+                        // FIX FOR CLARITY: Apply a 3x scale matrix for super crisp HD rendering
+                        MuPDF.NET.Matrix matrix = new MuPDF.NET.Matrix(3f, 3f);
+                        using MuPDF.NET.Pixmap pixmap = pdfPage.GetPixmap(matrix);
 
                         string tempFile = Path.Combine(tempDir, $"page_{i}.png");
                         pixmap.Save(tempFile);
+
+                        // Double check token before updating UI
+                        if (token.IsCancellationRequested) break;
 
                         dispatcher.TryEnqueue(() =>
                         {
                             try
                             {
-                                // FIX: WinUI 3 requires local paths to be formatted as strict URIs
                                 string uriPath = $"file:///{tempFile.Replace('\\', '/')}";
                                 var bitmap = new BitmapImage(new Uri(uriPath));
 
@@ -75,7 +86,6 @@ namespace Quill.Pages
                             }
                             catch (Exception imgEx)
                             {
-                                // If WinUI fails to load the image, show it on screen
                                 PageIndicator.Text = $"Image Error: {imgEx.Message}";
                             }
                         });
@@ -84,13 +94,19 @@ namespace Quill.Pages
             }
             catch (Exception ex)
             {
-                // If MuPDF fails to parse the file, show it on screen
                 dispatcher.TryEnqueue(() => PageIndicator.Text = $"PDF Error: {ex.Message}");
             }
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
+            // 1. Immediately kill the background rendering task
+            _cts?.Cancel();
+
+            // 2. Bring back the global Sidebar and Topbar
+            MainWindow.Instance?.SetReaderMode(false);
+
+            // 3. Go back to Library
             if (Frame.CanGoBack)
             {
                 Frame.GoBack();

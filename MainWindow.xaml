@@ -94,7 +94,7 @@
             </Ellipse.Fill>
         </Ellipse>
 
-        <Grid Width="80" 
+        <Grid x:Name="SidebarGrid" Width="80" 
       VerticalAlignment="Stretch" HorizontalAlignment="Left"
       Background="#CC1B1B1C" 
       Padding="0,32,0,32">
@@ -172,7 +172,7 @@
 
         <Frame x:Name="ContentFrame" Margin="80,0,0,0"/>
         
-        <Grid Height="80" 
+        <Grid x:Name="TopBarGrid" Height="80" 
     VerticalAlignment="Top" 
     Margin="80,0,0,0" 
     Padding="48,0,48,0">

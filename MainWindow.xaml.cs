@@ -11,39 +11,50 @@ namespace Quill
 {
     public sealed partial class MainWindow : Window
     {
-        // --- ACTIVE STATE COLORS ---
-        // Base: #335127AD (20% Opacity)
-        private readonly SolidColorBrush _activeBgBrush = new SolidColorBrush(Color.FromArgb(51, 81, 39, 173));
-        // Hover: Brighter Purple (31% Opacity) - Brightens without changing color
-        private readonly SolidColorBrush _activeBgHoverBrush = new SolidColorBrush(Color.FromArgb(80, 81, 39, 173));
-        // Foreground: Blue
-        private readonly SolidColorBrush _activeFgBrush = new SolidColorBrush(Color.FromArgb(255, 116, 209, 255));
+        // 1. Singleton instance so ReaderPage can hide the Navigation UI
+        public static MainWindow Instance { get; private set; }
 
-        // --- INACTIVE STATE COLORS ---
-        // Base: Transparent
+        private readonly SolidColorBrush _activeBgBrush = new SolidColorBrush(Color.FromArgb(51, 81, 39, 173));
+        private readonly SolidColorBrush _activeBgHoverBrush = new SolidColorBrush(Color.FromArgb(80, 81, 39, 173));
+        private readonly SolidColorBrush _activeFgBrush = new SolidColorBrush(Color.FromArgb(255, 116, 209, 255));
         private readonly SolidColorBrush _inactiveBgBrush = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
-        // Hover: Very subtle white (6% Opacity) - Gives a slight highlight to unselected items
         private readonly SolidColorBrush _inactiveBgHoverBrush = new SolidColorBrush(Color.FromArgb(15, 255, 255, 255));
-        // Foreground: Greyish
         private readonly SolidColorBrush _inactiveFgBrush = new SolidColorBrush(Color.FromArgb(255, 190, 200, 207));
 
         public MainWindow()
         {
+            Instance = this; // Set the instance
             this.InitializeComponent();
 
-            // 1. Title bar setup
             ExtendsContentIntoTitleBar = true;
             SetTitleBarButtonColors();
             CustomizeCaptionButtons();
 
-            // 2. Set default active button on startup (fixes the first-launch issue)
             RootGrid.Loaded += MainWindow_Loaded;
+        }
+
+        // 2. New Method to Toggle Fullscreen Reader View
+        public void SetReaderMode(bool isReaderMode)
+        {
+            if (isReaderMode)
+            {
+                // Hide global UI and remove the frame margin to fill the whole screen
+                SidebarGrid.Visibility = Visibility.Collapsed;
+                TopBarGrid.Visibility = Visibility.Collapsed;
+                ContentFrame.Margin = new Thickness(0);
+            }
+            else
+            {
+                // Restore global UI and margin
+                SidebarGrid.Visibility = Visibility.Visible;
+                TopBarGrid.Visibility = Visibility.Visible;
+                ContentFrame.Margin = new Thickness(80, 0, 0, 0);
+            }
         }
 
         private void SetTitleBarButtonColors()
         {
             var titleBar = AppWindow.TitleBar;
-
             var surfaceColor = Color.FromArgb(255, 19, 19, 19);
             var surfaceContainerHighest = Color.FromArgb(255, 53, 53, 53);
             var foregroundColor = Color.FromArgb(255, 255, 255, 255);
@@ -60,34 +71,21 @@ namespace Quill
 
         private void NavButton_Click(object sender, RoutedEventArgs e)
         {
-            // Reset all buttons to inactive
             ResetButtonStyles();
 
             if (sender is Button clickedBtn)
             {
-                //Standard Active colors
                 clickedBtn.Background = _activeBgBrush;
                 clickedBtn.Foreground = _activeFgBrush;
-
-                //Active Hover colors
                 clickedBtn.Resources["ButtonBackgroundPointerOver"] = _activeBgHoverBrush;
                 clickedBtn.Resources["ButtonForegroundPointerOver"] = _activeFgBrush;
-
-                // Keep it consistent when clicked/pressed
                 clickedBtn.Resources["ButtonBackgroundPressed"] = _activeBgHoverBrush;
                 clickedBtn.Resources["ButtonForegroundPressed"] = _activeFgBrush;
 
-                // Routing logic
                 switch (clickedBtn.Name)
                 {
                     case "LibraryBtn":
                         ContentFrame.Navigate(typeof(Pages.LibraryPage));
-                        break;
-                    case "ReadingBtn":
-                        break;
-                    case "RecentsBtn":
-                        break;
-                    case "SettingsBtn":
                         break;
                 }
 
@@ -99,56 +97,38 @@ namespace Quill
         private void ResetButtonStyles()
         {
             Button[] navButtons = { LibraryBtn, ReadingBtn, RecentsBtn, SettingsBtn };
-
             foreach (var btn in navButtons)
             {
-                // 1. Set the standard Inactive colors
                 btn.Background = _inactiveBgBrush;
                 btn.Foreground = _inactiveFgBrush;
-
-                // 2. Set the custom Inactive Hover colors
                 btn.Resources["ButtonBackgroundPointerOver"] = _inactiveBgHoverBrush;
                 btn.Resources["ButtonForegroundPointerOver"] = _inactiveFgBrush;
-
-                // Keep it consistent when clicked/pressed
                 btn.Resources["ButtonBackgroundPressed"] = _inactiveBgHoverBrush;
                 btn.Resources["ButtonForegroundPressed"] = _inactiveFgBrush;
             }
         }
+
         private void CustomizeCaptionButtons()
         {
             if (AppWindowTitleBar.IsCustomizationSupported())
             {
                 var titleBar = this.AppWindow.TitleBar;
-
-                // -- 1. Backgrounds --
-                // Set to fully transparent so your XAML AcrylicBrush shows through perfectly
                 titleBar.ButtonBackgroundColor = Colors.Transparent;
                 titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
-
-                // -- Foreground (Icon) Colors --
                 titleBar.ButtonForegroundColor = Color.FromArgb(255, 190, 200, 207);
                 titleBar.ButtonInactiveForegroundColor = Color.FromArgb(255, 100, 100, 100);
-
-                // -- 2. Hover States --
-                // Use a very faint, semi-transparent white (Alpha = 20) 
-                // This gives a subtle highlight while keeping the acrylic visible
                 titleBar.ButtonHoverBackgroundColor = Color.FromArgb(20, 255, 255, 255);
                 titleBar.ButtonHoverForegroundColor = Colors.White;
-
-                // -- 3. Pressed States --
-                // Slightly more opaque white for the click effect (Alpha = 40)
                 titleBar.ButtonPressedBackgroundColor = Color.FromArgb(40, 255, 255, 255);
                 titleBar.ButtonPressedForegroundColor = Colors.White;
             }
         }
+
         private async void ImportButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
-
-                // Note the "s" in ImportBooksAsync!
                 var newBooks = await Quill.Services.LibraryService.Instance.ImportBooksAsync(hwnd);
 
                 if (newBooks != null && newBooks.Count > 0)
@@ -161,8 +141,6 @@ namespace Quill
             }
             catch (Quill.Services.DuplicateBookException ex)
             {
-                // We refresh here too, because if they imported 3 books and 1 was a duplicate, 
-                // the other 2 still successfully imported before the exception was thrown!
                 if (ContentFrame.Content is Pages.LibraryPage libraryPage)
                 {
                     libraryPage.RefreshAfterImport();
@@ -179,15 +157,12 @@ namespace Quill
         {
             NotificationToast.Message = message;
             NotificationToast.IsOpen = true;
-
-            // Wait 3 seconds then hide it
             await Task.Delay(3000);
             NotificationToast.IsOpen = false;
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            // Set default active button on startup safely
             NavButton_Click(LibraryBtn, new RoutedEventArgs());
         }
     }
