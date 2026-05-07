@@ -56,7 +56,8 @@
                           Background="#1B1C1C"
                           CornerRadius="4">
 
-                        <ProgressRing IsActive="{x:Bind IsLoading, Mode=OneWay}" 
+                        <ProgressRing IsActive="{x:Bind IsLoading, Mode=OneWay}"
+                                      Visibility="{x:Bind LoadingVisibility, Mode=OneWay}"
                                       Foreground="#5127AD" 
                                       Width="40" Height="40" 
                                       HorizontalAlignment="Center" 

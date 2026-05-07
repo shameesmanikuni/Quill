@@ -26,8 +26,15 @@ namespace Quill.Pages
         public bool IsLoading
         {
             get => _isLoading;
-            set { _isLoading = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsLoading))); }
+            set {
+                _isLoading = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsLoading)));
+                // ALSO notify the UI that the Visibility changed!
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LoadingVisibility)));
+            }
         }
+        public Microsoft.UI.Xaml.Visibility LoadingVisibility =>
+            IsLoading ? Microsoft.UI.Xaml.Visibility.Visible : Microsoft.UI.Xaml.Visibility.Collapsed;
 
         private ImageSource? _imageSrc;
         public ImageSource? ImageSrc
