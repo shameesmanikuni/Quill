@@ -23,39 +23,34 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-
-                        <Grid x:Name="RootGrid" CornerRadius="16" RenderTransformOrigin="0.5,1" UseLayoutRounding="False">
-
-                            <Grid.RenderTransform>
-                                <TranslateTransform x:Name="CardLift"/>
-                            </Grid.RenderTransform>
-
+                        <Grid CornerRadius="16" UseLayoutRounding="False">
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup x:Name="CommonStates">
                                     <VisualState x:Name="Normal">
                                         <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetName="CardLift" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.2"/>
-                                            <DoubleAnimation Storyboard.TargetName="HoverOverlay" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2"/>
+                                            <ColorAnimation Storyboard.TargetName="CardBackground" 
+                                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" 
+                                                            To="#202020" Duration="0:0:0.3"/>
                                         </Storyboard>
                                     </VisualState>
                                     <VisualState x:Name="PointerOver">
                                         <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetName="CardLift" Storyboard.TargetProperty="Y" To="-6" Duration="0:0:0.2"/>
-                                            <DoubleAnimation Storyboard.TargetName="HoverOverlay" Storyboard.TargetProperty="Opacity" To="0.04" Duration="0:0:0.15"/>
+                                            <ColorAnimation Storyboard.TargetName="CardBackground" 
+                                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" 
+                                                            To="#2A2A2A" Duration="0:0:0.3"/>
                                         </Storyboard>
                                     </VisualState>
                                     <VisualState x:Name="Pressed">
                                         <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetName="CardLift" Storyboard.TargetProperty="Y" To="-2" Duration="0:0:0.05"/>
-                                            <DoubleAnimation Storyboard.TargetName="HoverOverlay" Storyboard.TargetProperty="Opacity" To="0.08" Duration="0:0:0.05"/>
+                                            <ColorAnimation Storyboard.TargetName="CardBackground" 
+                                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" 
+                                                            To="#353535" Duration="0:0:0.1"/>
                                         </Storyboard>
                                     </VisualState>
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
 
-                            <Border Background="#202020" CornerRadius="16"/>
-
-                            <Border x:Name="HoverOverlay" Background="White" Opacity="0" CornerRadius="16" IsHitTestVisible="False"/>
+                            <Border x:Name="CardBackground" Background="#202020" CornerRadius="16"/>
 
                             <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
                         </Grid>
@@ -243,8 +238,13 @@
                             <ItemsRepeater.Layout>
                                 <StackLayout Orientation="Horizontal" Spacing="32"/>
                             </ItemsRepeater.Layout>
+
                             <DataTemplate x:DataType="models:Book">
-                                <Button Style="{StaticResource ContinueReadingCardStyle}" Click="BookCard_Click" Tag="{x:Bind}">
+                                <Button Style="{StaticResource ContinueReadingCardStyle}" 
+                                        Click="BookCard_Click" 
+                                        PointerEntered="ContinueReadingCard_PointerEntered"
+                                        PointerExited="ContinueReadingCard_PointerExited"
+                                        Tag="{x:Bind}">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="160"/>
@@ -260,10 +260,18 @@
                                                     </LinearGradientBrush>
                                                 </Border.Background>
                                             </Border>
+
                                             <Border CornerRadius="16,0,0,16" Visibility="{x:Bind CoverVisibility, Mode=OneWay}">
-                                                <Border.Background>
-                                                    <ImageBrush ImageSource="{x:Bind CoverImage, Mode=OneWay}" Stretch="UniformToFill"/>
-                                                </Border.Background>
+                                                <Grid CornerRadius="16,0,0,16">
+                                                    <Image x:Name="CoverImageElement" 
+                                                           Source="{x:Bind CoverImage, Mode=OneWay}" 
+                                                           Stretch="UniformToFill" 
+                                                           RenderTransformOrigin="0.5,0.5">
+                                                        <Image.RenderTransform>
+                                                            <ScaleTransform ScaleX="1" ScaleY="1" />
+                                                        </Image.RenderTransform>
+                                                    </Image>
+                                                </Grid>
                                             </Border>
                                         </Grid>
 
@@ -283,12 +291,14 @@
                                                     <TextBlock Text="{x:Bind ReadingProgressText, Mode=OneWay}" FontSize="12" FontWeight="Bold" Foreground="#75D1FF" FontFamily="{StaticResource InterFont}" VerticalAlignment="Bottom"/>
                                                     <TextBlock Text="{x:Bind PageProgressText, Mode=OneWay}" FontSize="11" Foreground="#889299" FontFamily="{StaticResource InterFont}" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                                 </Grid>
-                                                <ProgressBar Value="{x:Bind LastPageRead, Mode=OneWay}" Maximum="{x:Bind DisplayTotalPages, Mode=OneWay}" Height="8" CornerRadius="4">
-                                                    <ProgressBar.Resources>
-                                                        <SolidColorBrush x:Key="ProgressBarIndicatorBackground" Color="#75D1FF"/>
-                                                        <SolidColorBrush x:Key="ProgressBarTrackBackground" Color="#0E0E0E"/>
-                                                    </ProgressBar.Resources>
-                                                </ProgressBar>
+
+                                                <ProgressBar Value="{x:Bind LastPageRead, Mode=OneWay}" 
+                                                             Maximum="{x:Bind DisplayTotalPages, Mode=OneWay}" 
+                                                             Height="8" 
+                                                             CornerRadius="4" 
+                                                             Foreground="#75D1FF" 
+                                                             Background="#0E0E0E" 
+                                                             Margin="0,4,0,0" />
                                             </StackPanel>
                                         </Grid>
                                     </Grid>

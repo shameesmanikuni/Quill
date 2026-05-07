@@ -66,8 +66,6 @@ namespace Quill.Pages
         private MuPDF.NET.Document? _pdfDoc;
         private readonly object _pdfLock = new object();
 
-        [DllImport("psapi.dll")]
-        public static extern int EmptyWorkingSet(IntPtr hwProc);
 
         public ReaderPage()
         {
@@ -88,11 +86,24 @@ namespace Quill.Pages
             }
         }
 
+        // NEW: Synchronous save for when the user clicks the Windows "X" button
+        public void ForceSaveProgress()
+        {
+            if (_currentBook != null)
+            {
+                _currentBook.LastReadDate = DateTime.Now;
+                // .Wait() forces the app to hold off on dying until the JSON file is saved!
+                Task.Run(async () => await Quill.Services.LibraryService.Instance.UpdateBookAsync(_currentBook)).Wait();
+            }
+        }
+
         protected override async void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
 
             MainWindow.Instance?.SetReaderMode(false);
+
+            // 1. Instantly stop all background rendering
             _debounceCts?.Cancel();
             _cts?.Cancel();
 
@@ -102,22 +113,46 @@ namespace Quill.Pages
                 await Quill.Services.LibraryService.Instance.UpdateBookAsync(_currentBook);
             }
 
+            // 2. Break the image references
             foreach (var page in VirtualPages)
             {
                 page.PageCts?.Cancel();
-                if (page.ImageSrc is BitmapImage bmp) bmp.UriSource = null;
+                if (page.ImageSrc is BitmapImage bmp)
+                {
+                    bmp.UriSource = null;
+                }
+
+                // This fires the event telling the UI to drop the image
                 page.ImageSrc = null;
             }
 
+            // ==========================================================
+            // 3. CRITICAL PAUSE #1: 
+            // We MUST wait 100ms here! This gives the WinUI layout engine 
+            // enough time to process the 'null' events and physically 
+            // unbind the DirectX surfaces from your graphics card.
+            // ==========================================================
+            await Task.Delay(100);
+
+            // 4. Now that the images are dropped, clear the collections
             PageRepeater.ItemsSource = null;
             VirtualPages.Clear();
 
-            _currentBook = null;
-            _debounceCts = null;
-            _cts = null;
+            // ==========================================================
+            // 5. CRITICAL PAUSE #2: 
+            // Give the ItemsRepeater 100ms to empty its internal C++ 
+            // recycle pool before we completely destroy it.
+            // ==========================================================
+            await Task.Delay(100);
 
-            PageRepeater.UpdateLayout();
+            // 6. Shred the UI tree
+            if (this.Content is Grid rootGrid)
+            {
+                rootGrid.Children.Clear();
+            }
+            this.Content = null;
 
+            // 7. Safely dispose MuPDF unmanaged memory
             await Task.Run(() =>
             {
                 lock (_pdfLock)
@@ -127,14 +162,12 @@ namespace Quill.Pages
                 }
             });
 
-            await Task.Delay(200);
-
+            // 8. The Scalpel: Flush the now-orphaned C# wrappers
             GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
             GC.WaitForPendingFinalizers();
             GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
 
-            EmptyWorkingSet(System.Diagnostics.Process.GetCurrentProcess().Handle);
-
+            // 9. Delete temp files
             try { if (Directory.Exists(_tempDir)) Directory.Delete(_tempDir, true); }
             catch { }
         }

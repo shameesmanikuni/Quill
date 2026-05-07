@@ -33,14 +33,18 @@ namespace Quill.Pages
             }
         }
 
-        private async void BookCard_Click(object sender, RoutedEventArgs e)
+        private void BookCard_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.Tag is Quill.Models.Book book)
             {
-                // Smooth click animation delay
-                await System.Threading.Tasks.Task.Delay(0);
+                // 1. Removed the Task.Delay(50) so it fires the exact millisecond you click
 
-                this.Frame.Navigate(typeof(Quill.Pages.ReaderPage), book);
+                // 2. Added SuppressNavigationTransitionInfo() to kill the slide-up animation
+                this.Frame.Navigate(
+                    typeof(Quill.Pages.ReaderPage),
+                    book,
+                    new Microsoft.UI.Xaml.Media.Animation.SuppressNavigationTransitionInfo()
+                );
             }
         }
     }

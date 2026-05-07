@@ -31,6 +31,7 @@ namespace Quill
             CustomizeCaptionButtons();
 
             RootGrid.Loaded += MainWindow_Loaded;
+            this.AppWindow.Closing += AppWindow_Closing;
         }
 
         // 2. New Method to Toggle Fullscreen Reader View
@@ -164,9 +165,27 @@ namespace Quill
             NotificationToast.IsOpen = false;
         }
 
-        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            // 1. Load the Library (This forces WinUI to load fonts, colors, and layout into the RAM)
             NavButton_Click(LibraryBtn, new RoutedEventArgs());
+
+            // 2. Wait 500ms to ensure the UI is fully rendered and "warmed up"
+            await Task.Delay(500);
+
+            // 3. THE SCALPEL: Tell C# to permanently delete the temporary startup data 
+            // (like JSON parsers and string builders) but LEAVE the WinUI graphics cache untouched!
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
+            GC.WaitForPendingFinalizers();
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
+        }
+        private void AppWindow_Closing(Microsoft.UI.Windowing.AppWindow sender, Microsoft.UI.Windowing.AppWindowClosingEventArgs args)
+        {
+            // If the user is currently looking at the Reader, force a save before dying
+            if (ContentFrame.Content is Pages.ReaderPage readerPage)
+            {
+                readerPage.ForceSaveProgress();
+            }
         }
     }
 }
