@@ -38,32 +38,31 @@
                                         <Storyboard>
                                             <ColorAnimation Storyboard.TargetName="CardBackground"
                                                             Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                            To="#202020" Duration="0:0:0.25"/>
+                                                            To="#D9202020" Duration="0:0:0.25"/>
                                         </Storyboard>
                                     </VisualState>
                                     <VisualState x:Name="PointerOver">
                                         <Storyboard>
                                             <ColorAnimation Storyboard.TargetName="CardBackground"
                                                             Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                            To="#2A2A2A" Duration="0:0:0.25"/>
+                                                            To="#E62A2A2A" Duration="0:0:0.25"/>
                                         </Storyboard>
                                     </VisualState>
                                     <VisualState x:Name="Pressed">
                                         <Storyboard>
                                             <ColorAnimation Storyboard.TargetName="CardBackground"
                                                             Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                            To="#353535" Duration="0:0:0.1"/>
+                                                            To="#F2353535" Duration="0:0:0.1"/>
                                         </Storyboard>
                                     </VisualState>
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
 
-                            <!--
-                                Surface-container card with outline-variant border.
-                                Matches code.html card background and subtle border.
-                            -->
-                            <Border x:Name="CardBackground" Background="#202020" CornerRadius="16"
-                                    BorderBrush="#404752" BorderThickness="1"/>
+                            <Border x:Name="CardBackground" CornerRadius="16" BorderThickness="1" BorderBrush="#0D404752">
+                                <Border.Background>
+                                    <SolidColorBrush Color="#D9202020"/>
+                                </Border.Background>
+                            </Border>
 
                             <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                               HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
@@ -429,13 +428,13 @@
 
                                             <StackPanel Grid.Row="0" Spacing="6" VerticalAlignment="Top">
                                                 <TextBlock Text="{x:Bind Title, Mode=OneWay}"
-                                                           FontSize="17" FontWeight="Bold"
+                                                           FontSize="20" FontWeight="Bold"
                                                            Foreground="White"
                                                            FontFamily="{StaticResource ManropeFont}"
                                                            MaxLines="2" TextWrapping="Wrap"
                                                            TextTrimming="WordEllipsis"/>
                                                 <TextBlock Text="{x:Bind Author, Mode=OneWay}"
-                                                           FontSize="13" Foreground="#889299"
+                                                           FontSize="14" Foreground="#889299"
                                                            FontFamily="{StaticResource InterFont}"/>
                                             </StackPanel>
 
@@ -446,12 +445,12 @@
                                                         Matches code.html: text-primary-fixed-dim text-sm font-bold
                                                     -->
                                                     <TextBlock Text="{x:Bind ReadingProgressText, Mode=OneWay}"
-                                                               FontSize="14" FontWeight="Bold"
+                                                               FontSize="15" FontWeight="Bold"
                                                                Foreground="#75D1FF"
                                                                FontFamily="{StaticResource InterFont}"
                                                                VerticalAlignment="Bottom"/>
                                                     <TextBlock Text="{x:Bind PageProgressText, Mode=OneWay}"
-                                                               FontSize="12" Foreground="#889299"
+                                                               FontSize="13" Foreground="#889299"
                                                                FontFamily="{StaticResource InterFont}"
                                                                HorizontalAlignment="Right"
                                                                VerticalAlignment="Bottom"/>
