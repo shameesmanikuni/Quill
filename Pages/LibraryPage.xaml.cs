@@ -14,6 +14,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.UI;
 
 namespace Quill.Pages
 {
@@ -21,7 +22,6 @@ namespace Quill.Pages
     {
         public LibraryViewModel ViewModel { get; } = new LibraryViewModel();
 
-        // Scroll behavior
         private bool _sectionHovered = false;
         private const double CardScrollWidth = 512; // 480px card + 32px gap
 
@@ -95,19 +95,19 @@ namespace Quill.Pages
         }
 
         // ════════════════════════════════════════════════════════════════════
-        // THUMBNAIL ZOOM ANIMATION (MATCHING CODE.HTML)
+        // CONTINUE READING — THUMBNAIL ZOOM
+        // 400ms as calibrated by you. CubicEase EaseOut for smooth snap.
+        // Matches code.html img scale hover effect.
         // ════════════════════════════════════════════════════════════════════
 
         private void ContinueReadingCard_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
             if (sender is Button btn)
             {
-                // The '?' here handles the case where imageElement might be null
                 var imageElement = FindVisualChild<Image>(btn, "CoverImageElement");
-
                 if (imageElement?.RenderTransform is ScaleTransform scaleTransform)
                 {
-                    AnimateScale(scaleTransform, 1.05, 500);
+                    AnimateScale(scaleTransform, 1.05, 400);
                 }
             }
         }
@@ -119,7 +119,7 @@ namespace Quill.Pages
                 var imageElement = FindVisualChild<Image>(btn, "CoverImageElement");
                 if (imageElement?.RenderTransform is ScaleTransform scaleTransform)
                 {
-                    AnimateScale(scaleTransform, 1.0, 500);
+                    AnimateScale(scaleTransform, 1.0, 400);
                 }
             }
         }
@@ -128,17 +128,155 @@ namespace Quill.Pages
         {
             var storyboard = new Storyboard();
             var duration = new Duration(TimeSpan.FromMilliseconds(durationMs));
+            var easing = new CubicEase { EasingMode = EasingMode.EaseOut };
 
-            var animX = new DoubleAnimation { To = toScale, Duration = duration, EnableDependentAnimation = true };
+            var animX = new DoubleAnimation
+            {
+                To = toScale,
+                Duration = duration,
+                EnableDependentAnimation = true,
+                EasingFunction = easing
+            };
             Storyboard.SetTarget(animX, target);
             Storyboard.SetTargetProperty(animX, "ScaleX");
 
-            var animY = new DoubleAnimation { To = toScale, Duration = duration, EnableDependentAnimation = true };
+            var animY = new DoubleAnimation
+            {
+                To = toScale,
+                Duration = duration,
+                EnableDependentAnimation = true,
+                EasingFunction = easing
+            };
             Storyboard.SetTarget(animY, target);
             Storyboard.SetTargetProperty(animY, "ScaleY");
 
             storyboard.Children.Add(animX);
             storyboard.Children.Add(animY);
+            storyboard.Begin();
+        }
+
+        // ════════════════════════════════════════════════════════════════════
+        // LIBRARY GRID — HOVER EFFECTS
+        //
+        // On hover:
+        //   1. Title text color → #75D1FF  (matches code.html group-hover:text-primary-fixed-dim)
+        //   2. CoverContainer gets a TranslateTransform applied and animated to Y=-8
+        //      (only the thumbnail moves, text stays put)
+        //
+        // The XAML VisualStateManager in LibraryCardStyle handles the CoverGrid overlay
+        // (the transparent lift layer + shadow). This code-behind handles:
+        //   - The actual CoverContainer inside ContentPresenter (the visible image)
+        //   - The title text color transition
+        //
+        // Both use QuadraticEase EaseOut at 300ms — the same as the XAML storyboard —
+        // for a consistent, calm animation matching code.html duration-300.
+        // ════════════════════════════════════════════════════════════════════
+
+        private void LibraryCard_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            if (sender is Button btn)
+            {
+                // 1. Animate title color to blue
+                var titleText = FindVisualChild<TextBlock>(btn, "BookTitleText");
+                if (titleText != null)
+                {
+                    AnimateTextColor(titleText, Windows.UI.Color.FromArgb(255, 117, 209, 255), 300);
+                }
+
+                // 2. Animate cover container lift (only cover moves, not the text)
+                var coverContainer = FindVisualChild<Grid>(btn, "CoverContainer");
+                if (coverContainer != null)
+                {
+                    EnsureTranslateTransform(coverContainer);
+                    if (coverContainer.RenderTransform is TranslateTransform tt)
+                    {
+                        AnimateTranslateY(tt, -8, 300);
+                    }
+                }
+            }
+        }
+
+        private void LibraryCard_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            if (sender is Button btn)
+            {
+                // 1. Animate title color back to default
+                var titleText = FindVisualChild<TextBlock>(btn, "BookTitleText");
+                if (titleText != null)
+                {
+                    AnimateTextColor(titleText, Windows.UI.Color.FromArgb(255, 229, 226, 225), 300);
+                }
+
+                // 2. Animate cover container back down
+                var coverContainer = FindVisualChild<Grid>(btn, "CoverContainer");
+                if (coverContainer != null)
+                {
+                    EnsureTranslateTransform(coverContainer);
+                    if (coverContainer.RenderTransform is TranslateTransform tt)
+                    {
+                        AnimateTranslateY(tt, 0, 300);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Ensures the element has a TranslateTransform set on RenderTransform.
+        /// Preserves existing TranslateTransform if already present.
+        /// </summary>
+        private static void EnsureTranslateTransform(FrameworkElement element)
+        {
+            if (element.RenderTransform is not TranslateTransform)
+            {
+                element.RenderTransform = new TranslateTransform();
+                element.RenderTransformOrigin = new Windows.Foundation.Point(0.5, 0.5);
+            }
+        }
+
+        private void AnimateTranslateY(TranslateTransform target, double toY, int durationMs)
+        {
+            var storyboard = new Storyboard();
+            var duration = new Duration(TimeSpan.FromMilliseconds(durationMs));
+            var easing = new QuadraticEase { EasingMode = EasingMode.EaseOut };
+
+            var anim = new DoubleAnimation
+            {
+                To = toY,
+                Duration = duration,
+                EasingFunction = easing,
+                EnableDependentAnimation = true
+            };
+            Storyboard.SetTarget(anim, target);
+            Storyboard.SetTargetProperty(anim, "Y");
+
+            storyboard.Children.Add(anim);
+            storyboard.Begin();
+        }
+
+        private void AnimateTextColor(TextBlock target, Windows.UI.Color toColor, int durationMs)
+        {
+            // Ensure Foreground is an animatable SolidColorBrush
+            if (target.Foreground is not SolidColorBrush brush)
+            {
+                brush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 229, 226, 225));
+                target.Foreground = brush;
+            }
+
+            var storyboard = new Storyboard();
+            var duration = new Duration(TimeSpan.FromMilliseconds(durationMs));
+            var easing = new QuadraticEase { EasingMode = EasingMode.EaseOut };
+
+            var anim = new ColorAnimation
+            {
+                To = toColor,
+                Duration = duration,
+                EasingFunction = easing,
+                EnableDependentAnimation = true
+            };
+            Storyboard.SetTarget(anim, brush);
+            Storyboard.SetTargetProperty(anim, "Color");
+
+            storyboard.Children.Add(anim);
             storyboard.Begin();
         }
 
@@ -160,6 +298,43 @@ namespace Quill.Pages
             }
         }
 
+        private async void RenameBook_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuFlyoutItem menuItem && menuItem.DataContext is Quill.Models.Book book)
+            {
+                var dialog = new ContentDialog
+                {
+                    Title = "Rename Book",
+                    PrimaryButtonText = "Rename",
+                    CloseButtonText = "Cancel",
+                    DefaultButton = ContentDialogButton.Primary,
+                    XamlRoot = this.XamlRoot
+                };
+
+                var inputBox = new TextBox
+                {
+                    PlaceholderText = "Enter new title",
+                    Text = book.Title,
+                    SelectionStart = 0,
+                    SelectionLength = book.Title?.Length ?? 0
+                };
+
+                dialog.Content = inputBox;
+
+                var result = await dialog.ShowAsync();
+
+                if (result == ContentDialogResult.Primary)
+                {
+                    var newTitle = inputBox.Text?.Trim();
+                    if (!string.IsNullOrEmpty(newTitle) && newTitle != book.Title)
+                    {
+                        await Quill.Services.LibraryService.Instance.RenameBookAsync(book.Id, newTitle);
+                        await ViewModel.RefreshAsync();
+                    }
+                }
+            }
+        }
+
         private void BookCard_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.Tag is Quill.Models.Book book)
@@ -178,15 +353,11 @@ namespace Quill.Pages
             {
                 var child = VisualTreeHelper.GetChild(parent, i);
                 if (child is FrameworkElement fe && fe.Name == name && child is T typedChild)
-                {
                     return typedChild;
-                }
 
                 var result = FindVisualChild<T>(child, name);
                 if (result != null)
-                {
                     return result;
-                }
             }
             return null;
         }
