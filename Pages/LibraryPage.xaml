@@ -24,9 +24,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Grid x:Name="RootGrid" CornerRadius="16" RenderTransformOrigin="0.5,1">
-                            <Grid.Background>
-                                <SolidColorBrush x:Name="CardBg" Color="#202020"/>
-                            </Grid.Background>
+
                             <Grid.RenderTransform>
                                 <TranslateTransform x:Name="CardLift"/>
                             </Grid.RenderTransform>
@@ -35,23 +33,28 @@
                                     <VisualState x:Name="Normal">
                                         <Storyboard>
                                             <DoubleAnimation Storyboard.TargetName="CardLift" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.2"/>
-                                            <ColorAnimation Storyboard.TargetName="CardBg" Storyboard.TargetProperty="Color" To="#202020" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="HoverOverlay" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2"/>
                                         </Storyboard>
                                     </VisualState>
                                     <VisualState x:Name="PointerOver">
                                         <Storyboard>
                                             <DoubleAnimation Storyboard.TargetName="CardLift" Storyboard.TargetProperty="Y" To="-6" Duration="0:0:0.2"/>
-                                            <ColorAnimation Storyboard.TargetName="CardBg" Storyboard.TargetProperty="Color" To="#2A2A2A" Duration="0:0:0.15"/>
+                                            <DoubleAnimation Storyboard.TargetName="HoverOverlay" Storyboard.TargetProperty="Opacity" To="0.04" Duration="0:0:0.15"/>
                                         </Storyboard>
                                     </VisualState>
                                     <VisualState x:Name="Pressed">
                                         <Storyboard>
                                             <DoubleAnimation Storyboard.TargetName="CardLift" Storyboard.TargetProperty="Y" To="-2" Duration="0:0:0.05"/>
+                                            <DoubleAnimation Storyboard.TargetName="HoverOverlay" Storyboard.TargetProperty="Opacity" To="0.08" Duration="0:0:0.05"/>
                                         </Storyboard>
                                     </VisualState>
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
+
+                            <Border Background="#202020" CornerRadius="16"/>
+                            <Border x:Name="HoverOverlay" Background="White" Opacity="0" CornerRadius="16" IsHitTestVisible="False"/>
                             <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
+
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -69,9 +72,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Grid x:Name="RootGrid" RenderTransformOrigin="0.5,1">
-                            <Grid.Background>
-                                <SolidColorBrush x:Name="CardBg" Color="Transparent"/>
-                            </Grid.Background>
+
                             <Grid.RenderTransform>
                                 <TranslateTransform x:Name="CardLift"/>
                             </Grid.RenderTransform>
@@ -81,12 +82,14 @@
                                         <Storyboard>
                                             <DoubleAnimation Storyboard.TargetName="CardLift" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.2"/>
                                             <DoubleAnimation Storyboard.TargetName="MoreButton" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="HoverOverlay" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2"/>
                                         </Storyboard>
                                     </VisualState>
                                     <VisualState x:Name="PointerOver">
                                         <Storyboard>
                                             <DoubleAnimation Storyboard.TargetName="CardLift" Storyboard.TargetProperty="Y" To="-8" Duration="0:0:0.2"/>
                                             <DoubleAnimation Storyboard.TargetName="MoreButton" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="HoverOverlay" Storyboard.TargetProperty="Opacity" To="0.04" Duration="0:0:0.15"/>
                                         </Storyboard>
                                     </VisualState>
                                     <VisualState x:Name="Pressed">
@@ -97,9 +100,10 @@
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
 
+                            <Border x:Name="HoverOverlay" Background="White" Opacity="0" CornerRadius="12" IsHitTestVisible="False" Canvas.ZIndex="5"/>
                             <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"/>
 
-                            <Button x:Name="MoreButton" Opacity="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,8,8,0" Background="#CC000000" Width="32" Height="32" CornerRadius="8">
+                            <Button x:Name="MoreButton" Opacity="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,8,8,0" Background="#CC000000" Width="32" Height="32" CornerRadius="8" Canvas.ZIndex="10">
                                 <Button.Flyout>
                                     <MenuFlyout Placement="BottomEdgeAlignedRight">
                                         <MenuFlyoutItem Text="Delete" Icon="Delete" Click="DeleteBook_Click" Foreground="#FF4444"/>
@@ -124,24 +128,28 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Grid x:Name="RootGrid" CornerRadius="24">
-                            <Grid.Background>
-                                <SolidColorBrush x:Name="ArrowBg" Color="#CC2A2A2A"/>
-                            </Grid.Background>
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup x:Name="CommonStates">
-                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="Normal">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="HoverOverlay" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </VisualState>
                                     <VisualState x:Name="PointerOver">
                                         <Storyboard>
-                                            <ColorAnimation Storyboard.TargetName="ArrowBg" Storyboard.TargetProperty="Color" To="#EE353535" Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="HoverOverlay" Storyboard.TargetProperty="Opacity" To="0.1" Duration="0:0:0.1"/>
                                         </Storyboard>
                                     </VisualState>
                                     <VisualState x:Name="Pressed">
                                         <Storyboard>
-                                            <ColorAnimation Storyboard.TargetName="ArrowBg" Storyboard.TargetProperty="Color" To="#BB2A2A2A" Duration="0:0:0.05"/>
+                                            <DoubleAnimation Storyboard.TargetName="HoverOverlay" Storyboard.TargetProperty="Opacity" To="0.05" Duration="0:0:0.05"/>
                                         </Storyboard>
                                     </VisualState>
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
+
+                            <Border Background="#2A2A2A" Opacity="0.8" CornerRadius="24"/>
+                            <Border x:Name="HoverOverlay" Background="White" Opacity="0" CornerRadius="24"/>
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Grid>
                     </ControlTemplate>
@@ -155,21 +163,28 @@
             <Setter Property="CornerRadius" Value="8"/>
             <Setter Property="Padding" Value="0"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Background" Value="#1B1C1C"/>
             <Setter Property="Foreground" Value="#889299"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Grid x:Name="RootGrid" CornerRadius="8">
-                            <Grid.Background>
-                                <SolidColorBrush x:Name="Bg" Color="#1B1C1C"/>
-                            </Grid.Background>
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup x:Name="CommonStates">
-                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="Normal">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="HoverOverlay" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.1"/>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+                                                <DiscreteObjectKeyFrame KeyTime="0">
+                                                    <DiscreteObjectKeyFrame.Value>
+                                                        <SolidColorBrush Color="#889299"/>
+                                                    </DiscreteObjectKeyFrame.Value>
+                                                </DiscreteObjectKeyFrame>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
                                     <VisualState x:Name="PointerOver">
                                         <Storyboard>
-                                            <ColorAnimation Storyboard.TargetName="Bg" Storyboard.TargetProperty="Color" To="#202020" Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="HoverOverlay" Storyboard.TargetProperty="Opacity" To="0.05" Duration="0:0:0.1"/>
                                             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
                                                 <DiscreteObjectKeyFrame KeyTime="0">
                                                     <DiscreteObjectKeyFrame.Value>
@@ -181,6 +196,9 @@
                                     </VisualState>
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
+
+                            <Border Background="#1B1C1C" CornerRadius="8"/>
+                            <Border x:Name="HoverOverlay" Background="White" Opacity="0" CornerRadius="8"/>
                             <ContentPresenter x:Name="ContentPresenter" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{TemplateBinding Foreground}"/>
                         </Grid>
                     </ControlTemplate>

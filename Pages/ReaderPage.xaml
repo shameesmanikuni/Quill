@@ -15,14 +15,21 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Background="#131313" Padding="12,0,12,0" Canvas.ZIndex="10">
-            <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
+        <Grid Grid.Row="0" Background="#131313" Padding="0,0,12,0" Canvas.ZIndex="10">
+            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Stretch">
+
                 <Button Click="BackButton_Click" 
                         Background="Transparent" 
                         BorderThickness="0" 
-                        Width="40" Height="40" CornerRadius="20">
+                        Width="64" CornerRadius="0" 
+                        VerticalAlignment="Stretch" HorizontalAlignment="Left">
+                    <Button.Resources>
+                        <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#20FFFFFF"/>
+                        <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#10FFFFFF"/>
+                    </Button.Resources>
                     <FontIcon Glyph="&#xE72B;" FontSize="16" Foreground="White"/>
                 </Button>
+
                 <TextBlock x:Name="BookTitleLabel" 
                            Foreground="White" 
                            FontSize="16" 
@@ -41,9 +48,10 @@
                       x:Name="ReaderScroll" 
                       VerticalScrollMode="Enabled" 
                       HorizontalScrollMode="Disabled" 
-                      Background="#0E0E0E">
+                      Background="#0E0E0E"
+                      ViewChanged="ReaderScroll_ViewChanged">
 
-            <ItemsRepeater x:Name="PageRepeater" ElementPrepared="PageRepeater_ElementPrepared">
+            <ItemsRepeater x:Name="PageRepeater" ElementPrepared="PageRepeater_ElementPrepared" ElementClearing="PageRepeater_ElementClearing">
                 <ItemsRepeater.Layout>
                     <StackLayout Spacing="24"/>
                 </ItemsRepeater.Layout>

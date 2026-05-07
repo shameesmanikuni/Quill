@@ -5,9 +5,12 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using Quill.Models;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,10 +19,10 @@ namespace Quill.Pages
     public class PdfPageItem : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
-
         public int PageNumber { get; set; }
         public double PageWidth { get; set; }
         public double PageHeight { get; set; }
+        public CancellationTokenSource? PageCts { get; set; }
 
         private bool _isLoading;
         public bool IsLoading
@@ -32,9 +35,7 @@ namespace Quill.Pages
                 OnPropertyChanged(nameof(LoadingVisibility));
             }
         }
-
-        public Visibility LoadingVisibility =>
-            IsLoading ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility LoadingVisibility => IsLoading ? Visibility.Visible : Visibility.Collapsed;
 
         private ImageSource? _imageSrc;
         public ImageSource? ImageSrc
@@ -46,8 +47,7 @@ namespace Quill.Pages
         public bool HasRendered { get; set; } = false;
         public string TempFilePath { get; set; } = string.Empty;
 
-        protected void OnPropertyChanged(string name) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        protected void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
     public sealed partial class ReaderPage : Page
@@ -57,9 +57,17 @@ namespace Quill.Pages
         private Book? _currentBook;
         private string _tempDir = string.Empty;
         private CancellationTokenSource? _cts;
+        private int _targetCenterPage = 0;
+        private CancellationTokenSource? _debounceCts;
+
+        // NEW: Bypass the 150ms delay on initial load
+        private bool _isFirstRender = true;
 
         private MuPDF.NET.Document? _pdfDoc;
         private readonly object _pdfLock = new object();
+
+        [DllImport("psapi.dll")]
+        public static extern int EmptyWorkingSet(IntPtr hwProc);
 
         public ReaderPage()
         {
@@ -70,28 +78,65 @@ namespace Quill.Pages
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-
-            // Enter Immersive Mode (Ensure you updated MainWindow with the SetReaderMode method)
             MainWindow.Instance?.SetReaderMode(true);
 
             if (e.Parameter is Book book)
             {
                 _currentBook = book;
                 BookTitleLabel.Text = book.Title;
-
                 await InitializePdfAsync(book.FilePath);
-
-                // FIX: Auto-jump to the last saved page using StartBringIntoView
-                if (_currentBook.LastPageRead > 0 && _currentBook.LastPageRead < VirtualPages.Count)
-                {
-                    // A small delay ensures the repeater has laid out its basic structure
-                    await Task.Delay(200);
-
-                    // The correct way to scroll an ItemsRepeater to an index:
-                    var element = PageRepeater.GetOrCreateElement((int)_currentBook.LastPageRead);
-                    element.StartBringIntoView();
-                }
             }
+        }
+
+        protected override async void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+
+            MainWindow.Instance?.SetReaderMode(false);
+            _debounceCts?.Cancel();
+            _cts?.Cancel();
+
+            if (_currentBook != null)
+            {
+                _currentBook.LastReadDate = DateTime.Now;
+                await Quill.Services.LibraryService.Instance.UpdateBookAsync(_currentBook);
+            }
+
+            foreach (var page in VirtualPages)
+            {
+                page.PageCts?.Cancel();
+                if (page.ImageSrc is BitmapImage bmp) bmp.UriSource = null;
+                page.ImageSrc = null;
+            }
+
+            PageRepeater.ItemsSource = null;
+            VirtualPages.Clear();
+
+            _currentBook = null;
+            _debounceCts = null;
+            _cts = null;
+
+            PageRepeater.UpdateLayout();
+
+            await Task.Run(() =>
+            {
+                lock (_pdfLock)
+                {
+                    _pdfDoc?.Dispose();
+                    _pdfDoc = null;
+                }
+            });
+
+            await Task.Delay(200);
+
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
+            GC.WaitForPendingFinalizers();
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
+
+            EmptyWorkingSet(System.Diagnostics.Process.GetCurrentProcess().Handle);
+
+            try { if (Directory.Exists(_tempDir)) Directory.Delete(_tempDir, true); }
+            catch { }
         }
 
         private async Task InitializePdfAsync(string filePath)
@@ -111,11 +156,10 @@ namespace Quill.Pages
                     _pdfDoc = new MuPDF.NET.Document(filePath);
                     int count = _pdfDoc.PageCount;
 
-                    // Standard aspect ratio placeholders
                     double defaultWidth = 800;
                     double defaultHeight = 1130;
 
-                    dispatcher.TryEnqueue(() =>
+                    dispatcher.TryEnqueue(async () =>
                     {
                         for (int i = 0; i < count; i++)
                         {
@@ -127,34 +171,90 @@ namespace Quill.Pages
                                 TempFilePath = Path.Combine(_tempDir, $"page_{i}.png")
                             });
                         }
-                        // Initial indicator setup
-                        PageIndicator.Text = $"Page {(_currentBook?.LastPageRead ?? 0) + 1} of {count}";
+
+                        if (_currentBook != null && _currentBook.LastPageRead > 0 && _currentBook.LastPageRead < count)
+                        {
+                            PageIndicator.Text = $"Page {(_currentBook.LastPageRead) + 1} of {count}";
+                            await Task.Delay(150);
+                            double targetY = _currentBook.LastPageRead * (defaultHeight + 20);
+                            ReaderScroll.ChangeView(null, targetY, null, true);
+                        }
+                        else
+                        {
+                            PageIndicator.Text = $"Page 1 of {count}";
+                            UpdateRenderWindow(0);
+                        }
                     });
                 });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 PageIndicator.Text = "Failed to open PDF.";
-                System.Diagnostics.Debug.WriteLine($"PDF Init Error: {ex.Message}");
+            }
+        }
+
+        private void ReaderScroll_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+        {
+            if (VirtualPages.Count == 0) return;
+
+            double centerOfViewport = ReaderScroll.VerticalOffset + (ReaderScroll.ViewportHeight / 2);
+            double pageHeight = VirtualPages[0].PageHeight + 20;
+
+            int currentIndex = (int)(centerOfViewport / pageHeight);
+
+            if (currentIndex < 0) currentIndex = 0;
+            if (currentIndex >= VirtualPages.Count) currentIndex = VirtualPages.Count - 1;
+
+            if (_targetCenterPage != currentIndex)
+            {
+                _targetCenterPage = currentIndex;
+
+                if (_currentBook != null)
+                {
+                    _currentBook.LastPageRead = currentIndex;
+                    PageIndicator.Text = $"Page {currentIndex + 1} of {VirtualPages.Count}";
+                }
+
+                TriggerDebouncedRender();
             }
         }
 
         private void PageRepeater_ElementPrepared(ItemsRepeater sender, ItemsRepeaterElementPreparedEventArgs args)
         {
-            if (args.Index >= 0 && args.Index < VirtualPages.Count)
+            TriggerDebouncedRender();
+        }
+
+        private void PageRepeater_ElementClearing(ItemsRepeater sender, ItemsRepeaterElementClearingEventArgs args)
+        {
+            if (args.Element is Grid container)
             {
-                UpdateRenderWindow(args.Index);
-
-                // Update the Book model in real-time as the user scrolls
-                if (_currentBook != null)
+                foreach (var child in container.Children)
                 {
-                    _currentBook.LastPageRead = args.Index;
-                    // Mark progress date so it moves to the front of "Continue Reading"
-                    _currentBook.LastReadDate = DateTime.Now;
-
-                    PageIndicator.Text = $"Page {args.Index + 1} of {VirtualPages.Count}";
+                    if (child is Image img) img.Source = null;
                 }
             }
+        }
+
+        private async void TriggerDebouncedRender()
+        {
+            // FIX 1: Instant rendering when the book first opens
+            if (_isFirstRender)
+            {
+                _isFirstRender = false;
+                UpdateRenderWindow(_targetCenterPage);
+                return;
+            }
+
+            _debounceCts?.Cancel();
+            _debounceCts = new CancellationTokenSource();
+            var token = _debounceCts.Token;
+
+            try
+            {
+                await Task.Delay(150, token);
+                if (!token.IsCancellationRequested) UpdateRenderWindow(_targetCenterPage);
+            }
+            catch { }
         }
 
         private void UpdateRenderWindow(int centerPage)
@@ -165,56 +265,81 @@ namespace Quill.Pages
             int keepStart = Math.Max(0, centerPage - 3);
             int keepEnd = Math.Min(totalPages - 1, centerPage + 3);
 
+            // 1. Unload off-screen pages instantly
             for (int i = 0; i < totalPages; i++)
             {
-                var page = VirtualPages[i];
-                if (i >= renderStart && i <= renderEnd)
+                if (i < keepStart || i > keepEnd)
                 {
-                    if (!page.HasRendered && !page.IsLoading)
-                        _ = RenderSpecificPageAsync(page);
-                }
-                else if (i < keepStart || i > keepEnd)
-                {
-                    if (page.HasRendered)
+                    var page = VirtualPages[i];
+                    if (page.HasRendered || page.IsLoading)
                     {
+                        page.PageCts?.Cancel();
+                        page.PageCts = null;
+                        if (page.ImageSrc is BitmapImage bmp) bmp.UriSource = null;
                         page.ImageSrc = null;
                         page.HasRendered = false;
                         page.IsLoading = false;
                     }
                 }
             }
+
+            // FIX 2: PRIORITY SORTING. Build the render queue based on distance to the center page.
+            var renderQueue = new List<int>();
+            for (int i = renderStart; i <= renderEnd; i++) renderQueue.Add(i);
+
+            // This ensures the page you are staring at renders FIRST, then the ones above/below it
+            renderQueue = renderQueue.OrderBy(i => Math.Abs(i - centerPage)).ToList();
+
+            foreach (int i in renderQueue)
+            {
+                var page = VirtualPages[i];
+                if (!page.HasRendered && !page.IsLoading)
+                {
+                    page.PageCts = new CancellationTokenSource();
+                    _ = RenderSpecificPageAsync(page, page.PageCts.Token);
+                }
+            }
         }
 
-        private async Task RenderSpecificPageAsync(PdfPageItem item)
+        private async Task RenderSpecificPageAsync(PdfPageItem item, CancellationToken pageToken)
         {
             item.IsLoading = true;
-            var token = _cts?.Token ?? CancellationToken.None;
+            var globalToken = _cts?.Token ?? CancellationToken.None;
             var dispatcher = this.DispatcherQueue;
 
             await Task.Run(() =>
             {
                 try
                 {
-                    if (token.IsCancellationRequested) return;
+                    if (globalToken.IsCancellationRequested || pageToken.IsCancellationRequested) return;
 
                     if (!File.Exists(item.TempFilePath))
                     {
                         lock (_pdfLock)
                         {
-                            if (token.IsCancellationRequested || _pdfDoc == null) return;
+                            if (globalToken.IsCancellationRequested || pageToken.IsCancellationRequested || _pdfDoc == null) return;
                             using MuPDF.NET.Page pdfPage = _pdfDoc[item.PageNumber];
-                            MuPDF.NET.Matrix matrix = new MuPDF.NET.Matrix(2.5f, 2.5f);
+
+                            // FIX 3: Matrix 1.5f produces images 64% smaller than 2.5f!
+                            // It eliminates the Disk I/O bottleneck while keeping text sharp.
+                            MuPDF.NET.Matrix matrix = new MuPDF.NET.Matrix(1.5f, 1.5f);
                             using MuPDF.NET.Pixmap pixmap = pdfPage.GetPixmap(matrix);
                             pixmap.Save(item.TempFilePath);
                         }
                     }
 
-                    if (!token.IsCancellationRequested)
+                    if (!globalToken.IsCancellationRequested && !pageToken.IsCancellationRequested)
                     {
                         dispatcher.TryEnqueue(() =>
                         {
+                            if (pageToken.IsCancellationRequested) return;
+
                             string uriPath = $"file:///{item.TempFilePath.Replace('\\', '/')}";
-                            item.ImageSrc = new BitmapImage(new Uri(uriPath));
+                            var bitmap = new BitmapImage();
+                            bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+                            bitmap.UriSource = new Uri(uriPath);
+
+                            item.ImageSrc = bitmap;
                             item.HasRendered = true;
                             item.IsLoading = false;
                         });
@@ -227,34 +352,9 @@ namespace Quill.Pages
             });
         }
 
-        private async void BackButton_Click(object sender, RoutedEventArgs e)
+        private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            // 1. Immediately kill background rendering
-            _cts?.Cancel();
-
-            // 2. Persist the current progress to the service before navigating away
-            if (_currentBook != null)
-            {
-                _currentBook.LastReadDate = DateTime.Now;
-                await Quill.Services.LibraryService.Instance.UpdateBookAsync(_currentBook);
-            }
-
-            // 3. Free MuPDF resources
-            _pdfDoc?.Dispose();
-            _pdfDoc = null;
-
-            // 4. Cleanup temporary image files
-            try
-            {
-                if (Directory.Exists(_tempDir))
-                    Directory.Delete(_tempDir, true);
-            }
-            catch { /* Ignore locks if thread was finishing a save */ }
-
-            // 5. Restore Side/Top bars and navigate back
-            MainWindow.Instance?.SetReaderMode(false);
-            if (Frame.CanGoBack)
-                Frame.GoBack();
+            if (Frame.CanGoBack) Frame.GoBack();
         }
     }
 }

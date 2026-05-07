@@ -39,11 +39,26 @@ namespace Quill.Models
         {
             get
             {
-                if (string.IsNullOrWhiteSpace(CoverPath)) return null;
-                try { return new BitmapImage(new Uri(CoverPath)); }
+                if (!HasValidCover) return null;
+                try
+                {
+                    // FIX: WinUI 3 requires strict URIs for local disk images!
+                    string uriPath = $"file:///{CoverPath.Replace('\\', '/')}";
+                    return new BitmapImage(new Uri(uriPath));
+                }
                 catch { return null; }
             }
         }
+
+        // NEW: Validates that the file path isn't just set, but physically exists on the hard drive
+        [JsonIgnore]
+        public bool HasValidCover => !string.IsNullOrWhiteSpace(CoverPath) && System.IO.File.Exists(CoverPath);
+
+        [JsonIgnore]
+        public Visibility CoverVisibility => HasValidCover ? Visibility.Visible : Visibility.Collapsed;
+
+        [JsonIgnore]
+        public Visibility PlaceholderVisibility => HasValidCover ? Visibility.Collapsed : Visibility.Visible;
 
         public string Format { get; set; } = "PDF";
         public DateTime DateAdded { get; set; } = DateTime.UtcNow;
@@ -67,12 +82,6 @@ namespace Quill.Models
 
         [JsonIgnore]
         public bool HasBeenRead => LastReadDate.HasValue || LastPageRead > 0;
-
-        [JsonIgnore]
-        public Visibility CoverVisibility => string.IsNullOrEmpty(CoverPath) ? Visibility.Collapsed : Visibility.Visible;
-
-        [JsonIgnore]
-        public Visibility PlaceholderVisibility => string.IsNullOrEmpty(CoverPath) ? Visibility.Visible : Visibility.Collapsed;
 
         protected void OnPropertyChanged([CallerMemberName] string? name = null) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));

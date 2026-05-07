@@ -89,15 +89,15 @@ namespace Quill.ViewModels
 
         private async Task RefreshCollectionsAsync()
         {
-            // 1. Capture the UI thread's dispatcher BEFORE going to the background thread
             var uiDispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
             await System.Threading.Tasks.Task.Run(() =>
             {
                 var all = LibraryService.Instance.GetAllBooks();
-                var recent = LibraryService.Instance.GetRecentBooks(10);
 
-                // 2. Marshal back to UI thread using the captured dispatcher instead of App.MainWindow
+                // FIX: Change GetRecentBooks(10) to GetRecentBooks(3)
+                var recent = LibraryService.Instance.GetRecentBooks(3);
+
                 uiDispatcher?.TryEnqueue(() =>
                 {
                     AllBooks = new ObservableCollection<Book>(all);

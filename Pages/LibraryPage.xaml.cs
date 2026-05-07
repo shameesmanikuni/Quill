@@ -39,6 +39,7 @@ namespace Quill.Pages
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+            this.Frame.ForwardStack.Clear();
 
             try
             {
