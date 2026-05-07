@@ -165,6 +165,7 @@ namespace Quill.Services
             };
 
             // Restricted to PDF only
+            picker.FileTypeFilter.Clear();
             picker.FileTypeFilter.Add(".pdf");
 
             WinRT.Interop.InitializeWithWindow.Initialize(picker, windowHandle);

@@ -220,7 +220,7 @@
                                 <StackLayout Orientation="Horizontal" Spacing="32"/>
                             </ItemsRepeater.Layout>
                             <DataTemplate x:DataType="models:Book">
-                                <Button Style="{StaticResource ContinueReadingCardStyle}" Click="BookCard_Click">
+                                <Button Style="{StaticResource ContinueReadingCardStyle}" Click="BookCard_Click" Tag="{x:Bind}">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="160"/>
@@ -315,7 +315,7 @@
                     </ItemsRepeater.Layout>
 
                     <DataTemplate x:DataType="models:Book">
-                        <Button Style="{StaticResource LibraryCardStyle}" Click="BookCard_Click">
+                        <Button Style="{StaticResource LibraryCardStyle}" Click="BookCard_Click" Tag="{x:Bind}">
                             <StackPanel Spacing="0">
                                 <Grid Height="240" CornerRadius="12" Background="#1B1C1C" x:Name="CoverContainer">
                                     <Border Visibility="{x:Bind PlaceholderVisibility, Mode=OneWay}" CornerRadius="12">

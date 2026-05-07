@@ -128,10 +128,10 @@ namespace Quill.Pages
 
         private void BookCard_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button btn && btn.DataContext is Quill.Models.Book book)
+            if (sender is Button btn && btn.Tag is Quill.Models.Book book)
             {
-                // We will implement the Reader navigation here in the next step
-                System.Diagnostics.Debug.WriteLine($"Opening: {book.Title}");
+                // Navigate to the reader with the book object
+                this.Frame.Navigate(typeof(Quill.Pages.ReaderPage), book);
             }
         }
     }
