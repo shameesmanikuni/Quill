@@ -270,5 +270,16 @@
                 </StackPanel>
             </Button>
         </Grid>
+        <InfoBar x:Name="NotificationToast" 
+                 IsOpen="False" 
+                 Severity="Informational"
+                 IsIconVisible="False"
+                 Title=""
+                 HorizontalAlignment="Center" 
+                 VerticalAlignment="Top" 
+                 Margin="0,80,0,0" 
+                 Canvas.ZIndex="100"
+                 Background="#2A2A2A"
+                 Foreground="White"/>
     </Grid>
 </Window>

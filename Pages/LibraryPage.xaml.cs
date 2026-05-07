@@ -115,5 +115,24 @@ namespace Quill.Pages
         {
             await ViewModel.RefreshAsync();
         }
+
+        private async void DeleteBook_Click(object sender, RoutedEventArgs e)
+        {
+            // Get the book object from the button's DataContext
+            if (sender is MenuFlyoutItem menuItem && menuItem.DataContext is Quill.Models.Book book)
+            {
+                await Quill.Services.LibraryService.Instance.DeleteBookAsync(book.Id);
+                await ViewModel.RefreshAsync();
+            }
+        }
+
+        private void BookCard_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is Quill.Models.Book book)
+            {
+                // We will implement the Reader navigation here in the next step
+                System.Diagnostics.Debug.WriteLine($"Opening: {book.Title}");
+            }
+        }
     }
 }

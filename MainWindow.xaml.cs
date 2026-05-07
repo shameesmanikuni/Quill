@@ -3,8 +3,9 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using Windows.UI;
 using System;
+using System.Threading.Tasks;
+using Windows.UI;
 
 namespace Quill
 {
@@ -146,9 +147,11 @@ namespace Quill
             try
             {
                 var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
-                var newBook = await Quill.Services.LibraryService.Instance.ImportBookAsync(hwnd);
 
-                if (newBook != null)
+                // Note the "s" in ImportBooksAsync!
+                var newBooks = await Quill.Services.LibraryService.Instance.ImportBooksAsync(hwnd);
+
+                if (newBooks != null && newBooks.Count > 0)
                 {
                     if (ContentFrame.Content is Pages.LibraryPage libraryPage)
                     {
@@ -156,12 +159,32 @@ namespace Quill
                     }
                 }
             }
+            catch (Quill.Services.DuplicateBookException ex)
+            {
+                // We refresh here too, because if they imported 3 books and 1 was a duplicate, 
+                // the other 2 still successfully imported before the exception was thrown!
+                if (ContentFrame.Content is Pages.LibraryPage libraryPage)
+                {
+                    libraryPage.RefreshAfterImport();
+                }
+                ShowToast(ex.Message);
+            }
             catch (Exception ex)
             {
-                // In the future, you could show a ContentDialog here with the error message
                 System.Diagnostics.Debug.WriteLine($"Import failed: {ex.Message}");
             }
         }
+
+        private async void ShowToast(string message)
+        {
+            NotificationToast.Message = message;
+            NotificationToast.IsOpen = true;
+
+            // Wait 3 seconds then hide it
+            await Task.Delay(3000);
+            NotificationToast.IsOpen = false;
+        }
+
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             // Set default active button on startup safely
