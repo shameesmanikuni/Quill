@@ -300,6 +300,21 @@ namespace Quill.Services
             await SaveBooksAsync();
         }
 
+        public async Task RenameBookAsync(string bookId, string newTitle)
+        {
+            // Find the book in the local list
+            var book = _books.FirstOrDefault(b => b.Id == bookId);
+
+            if (book != null)
+            {
+                // Update the title
+                book.Title = newTitle;
+
+                // Persist the changes to the books.json file
+                await SaveBooksAsync();
+            }
+        }
+
         // ── Private helpers ──────────────────────────────────────────────────
 
         private void EnsureInitialized()
