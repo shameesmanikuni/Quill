@@ -69,6 +69,21 @@ namespace Quill.Services
                    .ToList();
         }
 
+        public async Task RenameBookAsync(string bookId, string newTitle)
+        {
+            // Find the book in the current in-memory list
+            var book = _books.FirstOrDefault(b => b.Id == bookId);
+
+            if (book != null)
+            {
+                // Update the title
+                book.Title = newTitle;
+
+                // Save the updated list back to the JSON database
+                await SaveBooksAsync();
+            }
+        }
+
         //public async Task<Book?> ImportBookAsync(nint windowHandle)
         //{
         //    EnsureInitialized();

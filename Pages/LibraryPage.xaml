@@ -28,29 +28,39 @@
                                 <VisualStateGroup x:Name="CommonStates">
                                     <VisualState x:Name="Normal">
                                         <Storyboard>
-                                            <ColorAnimation Storyboard.TargetName="CardBackground" 
-                                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" 
-                                                            To="#202020" Duration="0:0:0.3"/>
+                                            <DoubleAnimation Storyboard.TargetName="HoverLayer" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.25"/>
                                         </Storyboard>
                                     </VisualState>
                                     <VisualState x:Name="PointerOver">
                                         <Storyboard>
-                                            <ColorAnimation Storyboard.TargetName="CardBackground" 
-                                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" 
-                                                            To="#2A2A2A" Duration="0:0:0.3"/>
+                                            <DoubleAnimation Storyboard.TargetName="HoverLayer" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.25"/>
                                         </Storyboard>
                                     </VisualState>
                                     <VisualState x:Name="Pressed">
                                         <Storyboard>
-                                            <ColorAnimation Storyboard.TargetName="CardBackground" 
-                                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" 
-                                                            To="#353535" Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="HoverLayer" Storyboard.TargetProperty="Opacity" To="0.6" Duration="0:0:0.1"/>
                                         </Storyboard>
                                     </VisualState>
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
 
-                            <Border x:Name="CardBackground" Background="#202020" CornerRadius="16"/>
+                            <Border x:Name="BaseLayer" CornerRadius="16" BorderThickness="1" BorderBrush="#0D404752">
+                                <Border.Background>
+                                    <AcrylicBrush TintColor="#222222" 
+                                                  TintOpacity="0.5" 
+                                                  TintLuminosityOpacity="0.8" 
+                                                  FallbackColor="#202020" />
+                                </Border.Background>
+                            </Border>
+
+                            <Border x:Name="HoverLayer" CornerRadius="16" Opacity="0" BorderThickness="1" BorderBrush="#0D404752">
+                                <Border.Background>
+                                    <AcrylicBrush TintColor="#2A2A2A" 
+                                                  TintOpacity="0.5" 
+                                                  TintLuminosityOpacity="0.8" 
+                                                  FallbackColor="#2A2A2A" />
+                                </Border.Background>
+                            </Border>
 
                             <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
                         </Grid>
@@ -66,51 +76,76 @@
             <Setter Property="VerticalAlignment" Value="Stretch"/>
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
             <Setter Property="VerticalContentAlignment" Value="Top"/>
+            <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-
-                        <Grid x:Name="RootGrid" RenderTransformOrigin="0.5,1" UseLayoutRounding="False">
-
-                            <Grid.RenderTransform>
-                                <TranslateTransform x:Name="CardLift"/>
-                            </Grid.RenderTransform>
-
+                        <Grid x:Name="RootGrid" UseLayoutRounding="False" Background="Transparent">
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup x:Name="CommonStates">
                                     <VisualState x:Name="Normal">
                                         <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetName="CardLift" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="CoverLift" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.3">
+                                                <DoubleAnimation.EasingFunction>
+                                                    <QuadraticEase EasingMode="EaseOut"/>
+                                                </DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                            <DoubleAnimation Storyboard.TargetName="CoverShadow" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.3"/>
                                             <DoubleAnimation Storyboard.TargetName="MoreButton" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2"/>
-                                            <DoubleAnimation Storyboard.TargetName="HoverOverlay" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2"/>
                                         </Storyboard>
                                     </VisualState>
                                     <VisualState x:Name="PointerOver">
                                         <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetName="CardLift" Storyboard.TargetProperty="Y" To="-8" Duration="0:0:0.2"/>
-                                            <DoubleAnimation Storyboard.TargetName="MoreButton" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.1"/>
-                                            <DoubleAnimation Storyboard.TargetName="HoverOverlay" Storyboard.TargetProperty="Opacity" To="0.04" Duration="0:0:0.15"/>
+                                            <DoubleAnimation Storyboard.TargetName="CoverLift" Storyboard.TargetProperty="Y" To="-8" Duration="0:0:0.3">
+                                                <DoubleAnimation.EasingFunction>
+                                                    <QuadraticEase EasingMode="EaseOut"/>
+                                                </DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                            <DoubleAnimation Storyboard.TargetName="CoverShadow" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.3"/>
+                                            <DoubleAnimation Storyboard.TargetName="MoreButton" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.15"/>
                                         </Storyboard>
                                     </VisualState>
                                     <VisualState x:Name="Pressed">
                                         <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetName="CardLift" Storyboard.TargetProperty="Y" To="-2" Duration="0:0:0.05"/>
+                                            <DoubleAnimation Storyboard.TargetName="CoverLift" Storyboard.TargetProperty="Y" To="-2" Duration="0:0:0.05"/>
                                         </Storyboard>
                                     </VisualState>
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
 
-                            <Border x:Name="HoverOverlay" Background="White" Opacity="0" CornerRadius="12" IsHitTestVisible="False" Canvas.ZIndex="5"/>
-
                             <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"/>
 
-                            <Button x:Name="MoreButton" Opacity="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,8,8,0" Background="#CC000000" Width="32" Height="32" CornerRadius="8" Canvas.ZIndex="10">
+                            <Grid x:Name="CoverGrid" VerticalAlignment="Top" HorizontalAlignment="Stretch" IsHitTestVisible="False" RenderTransformOrigin="0.5,0.5" SizeChanged="Cover_SizeChanged">
+                                <Grid.RenderTransform>
+                                    <TranslateTransform x:Name="CoverLift"/>
+                                </Grid.RenderTransform>
+                                <Border x:Name="CoverShadow" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="12,0,12,-16" Height="20" CornerRadius="10" Opacity="0">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                            <GradientStop Color="#80000000" Offset="0"/>
+                                            <GradientStop Color="#00000000" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+                            </Grid>
+
+                            <Button x:Name="MoreButton" Opacity="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,8,8,0" Background="#99000000" Width="32" Height="32" CornerRadius="8" Canvas.ZIndex="20" BorderThickness="0">
                                 <Button.Flyout>
                                     <MenuFlyout Placement="BottomEdgeAlignedRight">
-                                        <MenuFlyoutItem Text="Delete" Icon="Delete" Click="DeleteBook_Click" Foreground="#FF4444"/>
+                                        <MenuFlyoutItem Text="Rename" Click="RenameBook_Click">
+                                            <MenuFlyoutItem.Icon>
+                                                <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xE8AC;"/>
+                                            </MenuFlyoutItem.Icon>
+                                        </MenuFlyoutItem>
+                                        <MenuFlyoutSeparator/>
+                                        <MenuFlyoutItem Text="Delete" Click="DeleteBook_Click" Foreground="#FF4444">
+                                            <MenuFlyoutItem.Icon>
+                                                <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xE74D;" Foreground="#FF4444"/>
+                                            </MenuFlyoutItem.Icon>
+                                        </MenuFlyoutItem>
                                     </MenuFlyout>
                                 </Button.Flyout>
-                                <FontIcon Glyph="&#xE712;" FontSize="14" Foreground="White"/>
+                                <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xE10C;" FontSize="14" Foreground="White"/>
                             </Button>
                         </Grid>
                     </ControlTemplate>
@@ -148,7 +183,6 @@
                                     </VisualState>
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
-
                             <Border Background="#2A2A2A" Opacity="0.8" CornerRadius="24"/>
                             <Border x:Name="HoverOverlay" Background="White" Opacity="0" CornerRadius="24" IsHitTestVisible="False"/>
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -197,7 +231,6 @@
                                     </VisualState>
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
-
                             <Border Background="#1B1C1C" CornerRadius="8"/>
                             <Border x:Name="HoverOverlay" Background="White" Opacity="0" CornerRadius="8" IsHitTestVisible="False"/>
                             <ContentPresenter x:Name="ContentPresenter" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{TemplateBinding Foreground}"/>
@@ -220,7 +253,7 @@
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0">
-                    <TextBlock Text="Continue Reading" FontFamily="{StaticResource ManropeFont}" FontSize="36" FontWeight="ExtraBold" Foreground="White" VerticalAlignment="Center"/>
+                    <TextBlock Text="Continue Reading" FontFamily="{StaticResource ManropeFont}" FontSize="35" FontWeight="ExtraBold" Foreground="White" VerticalAlignment="Center"/>
                     <HyperlinkButton Content="View all history" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="#75D1FF" FontSize="13" FontFamily="{StaticResource InterFont}"/>
                 </Grid>
 
@@ -234,24 +267,20 @@
 
                 <Grid Grid.Row="2" Visibility="{x:Bind ViewModel.RecentBooksVisibility, Mode=OneWay}">
                     <ScrollViewer x:Name="ContinueReadingScroll" HorizontalScrollMode="Enabled" VerticalScrollMode="Disabled" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" ViewChanged="ContinueReadingScroll_ViewChanged">
-                        <ItemsRepeater ItemsSource="{x:Bind ViewModel.RecentBooks, Mode=OneWay}" Margin="0,0,0,12">
+                        <ItemsRepeater ItemsSource="{x:Bind ViewModel.RecentBooks, Mode=OneWay}" Margin="0,0,0,16">
                             <ItemsRepeater.Layout>
-                                <StackLayout Orientation="Horizontal" Spacing="32"/>
+                                <StackLayout Orientation="Horizontal" Spacing="24"/>
                             </ItemsRepeater.Layout>
 
                             <DataTemplate x:DataType="models:Book">
-                                <Button Style="{StaticResource ContinueReadingCardStyle}" 
-                                        Click="BookCard_Click" 
-                                        PointerEntered="ContinueReadingCard_PointerEntered"
-                                        PointerExited="ContinueReadingCard_PointerExited"
-                                        Tag="{x:Bind}">
+                                <Button Style="{StaticResource ContinueReadingCardStyle}" Click="BookCard_Click" PointerEntered="ContinueReadingCard_PointerEntered" PointerExited="ContinueReadingCard_PointerExited" Tag="{x:Bind}">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="160"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <Grid Grid.Column="0">
+                                        <Grid Grid.Column="0" CornerRadius="16,0,0,16">
                                             <Border CornerRadius="16,0,0,16" Visibility="{x:Bind PlaceholderVisibility, Mode=OneWay}">
                                                 <Border.Background>
                                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -260,45 +289,50 @@
                                                     </LinearGradientBrush>
                                                 </Border.Background>
                                             </Border>
-
                                             <Border CornerRadius="16,0,0,16" Visibility="{x:Bind CoverVisibility, Mode=OneWay}">
                                                 <Grid CornerRadius="16,0,0,16">
-                                                    <Image x:Name="CoverImageElement" 
-                                                           Source="{x:Bind CoverImage, Mode=OneWay}" 
-                                                           Stretch="UniformToFill" 
-                                                           RenderTransformOrigin="0.5,0.5">
+                                                    <Image x:Name="CoverImageElement" Source="{x:Bind CoverImage, Mode=OneWay}" Stretch="UniformToFill" RenderTransformOrigin="0.5,0.5">
                                                         <Image.RenderTransform>
-                                                            <ScaleTransform ScaleX="1" ScaleY="1" />
+                                                            <ScaleTransform ScaleX="1" ScaleY="1"/>
                                                         </Image.RenderTransform>
                                                     </Image>
                                                 </Grid>
                                             </Border>
                                         </Grid>
 
-                                        <Grid Grid.Column="1" Padding="24,24,24,24">
+                                        <Grid Grid.Column="1" Padding="24">
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="*"/>
                                                 <RowDefinition Height="Auto"/>
                                             </Grid.RowDefinitions>
 
                                             <StackPanel Grid.Row="0" Spacing="6" VerticalAlignment="Top">
-                                                <TextBlock Text="{x:Bind Title, Mode=OneWay}" FontSize="17" FontWeight="Bold" Foreground="White" FontFamily="{StaticResource ManropeFont}" MaxLines="2" TextWrapping="Wrap" TextTrimming="WordEllipsis"/>
-                                                <TextBlock Text="{x:Bind Author, Mode=OneWay}" FontSize="13" Foreground="#889299" FontFamily="{StaticResource InterFont}"/>
+                                                <TextBlock Text="{x:Bind Title, Mode=OneWay}" FontSize="20" FontWeight="Bold" Foreground="White" FontFamily="{StaticResource ManropeFont}" MaxLines="2" TextWrapping="Wrap" TextTrimming="WordEllipsis"/>
+                                                <TextBlock Text="{x:Bind Author, Mode=OneWay}" FontSize="14" Foreground="#889299" FontFamily="{StaticResource InterFont}"/>
                                             </StackPanel>
 
                                             <StackPanel Grid.Row="1" Spacing="8">
                                                 <Grid>
-                                                    <TextBlock Text="{x:Bind ReadingProgressText, Mode=OneWay}" FontSize="12" FontWeight="Bold" Foreground="#75D1FF" FontFamily="{StaticResource InterFont}" VerticalAlignment="Bottom"/>
-                                                    <TextBlock Text="{x:Bind PageProgressText, Mode=OneWay}" FontSize="11" Foreground="#889299" FontFamily="{StaticResource InterFont}" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                                                    <TextBlock Text="{x:Bind ReadingProgressText, Mode=OneWay}" FontSize="15" FontWeight="Bold" Foreground="#75D1FF" FontFamily="{StaticResource InterFont}" VerticalAlignment="Bottom"/>
+                                                    <TextBlock Text="{x:Bind PageProgressText, Mode=OneWay}" FontSize="13" Foreground="#889299" FontFamily="{StaticResource InterFont}" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                                 </Grid>
-
                                                 <ProgressBar Value="{x:Bind LastPageRead, Mode=OneWay}" 
-                                                             Maximum="{x:Bind DisplayTotalPages, Mode=OneWay}" 
-                                                             Height="8" 
-                                                             CornerRadius="4" 
-                                                             Foreground="#75D1FF" 
-                                                             Background="#0E0E0E" 
-                                                             Margin="0,4,0,0" />
+             Maximum="{x:Bind DisplayTotalPages, Mode=OneWay}" 
+             Height="8"
+             MinHeight="8"
+             CornerRadius="4" 
+             BorderThickness="0" 
+             Foreground="#75D1FF"
+             Background="#0E0E0E"
+             Margin="0,2,0,0">
+                                                    <ProgressBar.Resources>
+                                                        <x:Double x:Key="ProgressBarTrackHeight">8</x:Double>
+
+                                                        <SolidColorBrush x:Key="ProgressBarTrackFill" Color="#0E0E0E"/>
+
+                                                        <SolidColorBrush x:Key="ProgressBarIndicatorForeground" Color="#75D1FF"/>
+                                                    </ProgressBar.Resources>
+                                                </ProgressBar>
                                             </StackPanel>
                                         </Grid>
                                     </Grid>
@@ -324,7 +358,7 @@
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0">
-                    <TextBlock Text="My Library" FontFamily="{StaticResource ManropeFont}" FontSize="30" FontWeight="ExtraBold" Foreground="White" VerticalAlignment="Center"/>
+                    <TextBlock Text="My Library" FontFamily="{StaticResource ManropeFont}" FontSize="33" FontWeight="ExtraBold" Foreground="White" VerticalAlignment="Center"/>
                     <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="12">
                         <Button Style="{StaticResource IconActionButtonStyle}">
                             <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xE152;" FontSize="18"/>
@@ -343,15 +377,16 @@
                     </StackPanel>
                 </Border>
 
-                <ItemsRepeater Grid.Row="2" x:Name="LibraryGrid" ItemsSource="{x:Bind ViewModel.AllBooks, Mode=OneWay}" Visibility="{x:Bind ViewModel.BooksGridVisibility, Mode=OneWay}">
+                <ItemsRepeater Grid.Row="2" x:Name="LibraryGrid" HorizontalAlignment="Stretch" ItemsSource="{x:Bind ViewModel.AllBooks, Mode=OneWay}" Visibility="{x:Bind ViewModel.BooksGridVisibility, Mode=OneWay}">
                     <ItemsRepeater.Layout>
-                        <UniformGridLayout MinItemWidth="180" MinColumnSpacing="32" MinRowSpacing="48" ItemsStretch="Fill"/>
+                        <UniformGridLayout MaximumRowsOrColumns="5" MinItemWidth="200" MinColumnSpacing="32" MinRowSpacing="48" ItemsStretch="Fill"/>
                     </ItemsRepeater.Layout>
 
                     <DataTemplate x:DataType="models:Book">
-                        <Button Style="{StaticResource LibraryCardStyle}" Click="BookCard_Click" Tag="{x:Bind}">
+                        <Button Style="{StaticResource LibraryCardStyle}" Click="BookCard_Click" Tag="{x:Bind}" PointerEntered="LibraryCard_PointerEntered" PointerExited="LibraryCard_PointerExited">
                             <StackPanel Spacing="0">
-                                <Grid Height="240" CornerRadius="12" Background="#1B1C1C" x:Name="CoverContainer">
+
+                                <Grid x:Name="CoverContainer" CornerRadius="12" SizeChanged="Cover_SizeChanged">
                                     <Border Visibility="{x:Bind PlaceholderVisibility, Mode=OneWay}" CornerRadius="12">
                                         <Border.Background>
                                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -369,17 +404,14 @@
                                     </Border>
                                 </Grid>
 
-                                <TextBlock Text="{x:Bind Title, Mode=OneWay}" 
-                                           Height="44" Margin="0,14,0,4"
-                                           FontSize="14" FontWeight="Bold" Foreground="#E5E2E1" FontFamily="{StaticResource InterFont}"
-                                           TextWrapping="Wrap" MaxLines="2" TextTrimming="WordEllipsis"/>
+                                <TextBlock x:Name="BookTitleText" Text="{x:Bind Title, Mode=OneWay}" Height="50" Margin="0,14,0,6" FontSize="16" FontWeight="Bold" Foreground="#E5E2E1" FontFamily="{StaticResource InterFont}" TextWrapping="Wrap" MaxLines="2" TextTrimming="WordEllipsis"/>
 
                                 <Grid Margin="0,0,0,8">
-                                    <TextBlock Text="{x:Bind ReadingProgressText, Mode=OneWay}" FontSize="11" Foreground="#889299" FontFamily="{StaticResource InterFont}"/>
-                                    <TextBlock Text="{x:Bind PageProgressText, Mode=OneWay}" FontSize="11" Foreground="#889299" FontFamily="{StaticResource InterFont}" HorizontalAlignment="Right"/>
+                                    <TextBlock Text="{x:Bind ReadingProgressText, Mode=OneWay}" FontSize="12" FontWeight="Bold" Foreground="#75D1FF" FontFamily="{StaticResource InterFont}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+                                    <TextBlock Text="{x:Bind PageProgressText, Mode=OneWay}" FontSize="12" Foreground="#889299" FontFamily="{StaticResource InterFont}" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                 </Grid>
 
-                                <ProgressBar Value="{x:Bind LastPageRead, Mode=OneWay}" Maximum="{x:Bind DisplayTotalPages, Mode=OneWay}" Height="4" CornerRadius="2">
+                                <ProgressBar Value="{x:Bind LastPageRead, Mode=OneWay}" Maximum="{x:Bind DisplayTotalPages, Mode=OneWay}" Height="4" CornerRadius="2" BorderThickness="0">
                                     <ProgressBar.Resources>
                                         <SolidColorBrush x:Key="ProgressBarIndicatorBackground" Color="#5127AD"/>
                                         <SolidColorBrush x:Key="ProgressBarTrackBackground" Color="#0E0E0E"/>
