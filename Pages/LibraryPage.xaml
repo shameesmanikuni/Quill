@@ -266,10 +266,10 @@
                     </ScrollViewer>
 
                     <Button x:Name="LeftArrowBtn" Style="{StaticResource ArrowButtonStyle}" Visibility="{x:Bind ViewModel.ArrowsVisibility, Mode=OneWay}" Opacity="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="-20,0,0,0" Click="LeftArrow_Click">
-                        <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xE5CB;" FontSize="22"/>
+                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE76B;" FontSize="22"/>
                     </Button>
                     <Button x:Name="RightArrowBtn" Style="{StaticResource ArrowButtonStyle}" Visibility="{x:Bind ViewModel.ArrowsVisibility, Mode=OneWay}" Opacity="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,-20,0" Click="RightArrow_Click">
-                        <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xE5CC;" FontSize="22"/>
+                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE76C;" FontSize="22"/>
                     </Button>
                 </Grid>
             </Grid>
@@ -285,10 +285,10 @@
                     <TextBlock Text="My Library" FontFamily="{StaticResource ManropeFont}" FontSize="33" FontWeight="ExtraBold" Foreground="White" VerticalAlignment="Center"/>
                     <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="12">
                         <Button Style="{StaticResource IconActionButtonStyle}">
-                            <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xE152;" FontSize="18"/>
+                            <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xE164;" FontSize="26"/>
                         </Button>
                         <Button Style="{StaticResource IconActionButtonStyle}">
-                            <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xE9B0;" FontSize="18"/>
+                            <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xE9B0;" FontSize="26"/>
                         </Button>
                     </StackPanel>
                 </Grid>
@@ -311,17 +311,28 @@
 
                             <Button.ContextFlyout>
                                 <MenuFlyout Placement="BottomEdgeAlignedRight">
+
                                     <MenuFlyoutItem Text="Edit" Click="EditBook_Click">
                                         <MenuFlyoutItem.Icon>
-                                            <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xE70F;"/>
+                                            <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE70F;"/>
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
+
                                     <MenuFlyoutSeparator/>
+
                                     <MenuFlyoutItem Text="Delete" Click="DeleteBook_Click" Foreground="#FF4444">
+                                        <MenuFlyoutItem.Resources>
+                                            <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPointerOver" Color="#FF4444"/>
+                                            <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPressed" Color="#CC3333"/>
+
+                                            <SolidColorBrush x:Key="MenuFlyoutItemForegroundPointerOver" Color="White"/>
+                                            <SolidColorBrush x:Key="MenuFlyoutItemForegroundPressed" Color="White"/>
+                                        </MenuFlyoutItem.Resources>
                                         <MenuFlyoutItem.Icon>
-                                            <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xE74D;" Foreground="#FF4444"/>
+                                            <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE74D;" />
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
+
                                 </MenuFlyout>
                             </Button.ContextFlyout>
 
@@ -336,7 +347,7 @@
                                         </Border.Background>
                                     </Border>
 
-                                    <Grid x:Name="CoverContainer" CornerRadius="12" SizeChanged="Cover_SizeChanged">
+                                    <Grid x:Name="CoverContainer" CornerRadius="12" SizeChanged="Cover_SizeChanged" Loaded="Cover_Loaded">
                                         <Grid.RenderTransform>
                                             <TranslateTransform />
                                         </Grid.RenderTransform>
@@ -362,15 +373,25 @@
                                 <TextBlock x:Name="BookTitleText" Text="{x:Bind Title, Mode=OneWay}" Height="50" Margin="0,0,0,6" FontSize="18" FontWeight="Bold" Foreground="#E5E2E1" FontFamily="{StaticResource InterFont}" TextWrapping="Wrap" MaxLines="2" TextTrimming="WordEllipsis"/>
 
                                 <Grid Margin="0,0,0,8">
-                                    <TextBlock Text="{x:Bind ReadingProgressText, Mode=OneWay}" FontSize="12" FontWeight="Medium" Foreground="#889299" FontFamily="{StaticResource InterFont}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
-                                    <TextBlock Text="{x:Bind PageProgressText, Mode=OneWay}" FontSize="12" Foreground="#889299" FontFamily="{StaticResource InterFont}" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                                    <TextBlock Text="{x:Bind ReadingProgressText, Mode=OneWay}" FontSize="13" FontWeight="Medium" Foreground="#889299" FontFamily="{StaticResource InterFont}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+                                    <TextBlock Text="{x:Bind PageProgressText, Mode=OneWay}" FontSize="13" Foreground="#889299" FontFamily="{StaticResource InterFont}" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                 </Grid>
 
-                                <ProgressBar Value="{x:Bind LastPageRead, Mode=OneWay}" Maximum="{x:Bind DisplayTotalPages, Mode=OneWay}" Height="4" CornerRadius="2" BorderThickness="0" Foreground="#5127AD">
+                                <ProgressBar Value="{x:Bind LastPageRead, Mode=OneWay}" 
+             Maximum="{x:Bind DisplayTotalPages, Mode=OneWay}" 
+             Height="5" 
+             MinHeight="5"
+             CornerRadius="2.5"
+             BorderThickness="0" 
+             Foreground="#5127AD" 
+             Background="#0E0E0E">
                                     <ProgressBar.Resources>
-                                        <SolidColorBrush x:Key="ProgressBarTrackBackground" Color="#0E0E0E"/>
+                                        <x:Double x:Key="ProgressBarTrackHeight">5</x:Double>
+                                        <SolidColorBrush x:Key="ProgressBarTrackFill" Color="#0E0E0E"/>
+                                        <SolidColorBrush x:Key="ProgressBarIndicatorForeground" Color="#5127AD"/>
                                     </ProgressBar.Resources>
                                 </ProgressBar>
+
                             </StackPanel>
                         </Button>
                     </DataTemplate>

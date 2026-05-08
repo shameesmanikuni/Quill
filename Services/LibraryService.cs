@@ -234,6 +234,7 @@ namespace Quill.Services
                             string coverFile = Path.Combine(bookFolder, "cover.png");
                             pixmap.Save(coverFile);
                             coverPath = coverFile;
+                            System.Threading.Thread.Sleep(100);
                         }
                     }
                     catch (Exception ex)

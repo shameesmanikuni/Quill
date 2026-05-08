@@ -44,6 +44,19 @@ namespace Quill.Pages
             }
         }
 
+        private void Cover_Loaded(object sender, RoutedEventArgs e)
+        {
+            // ItemsRepeater virtualization safety net: forces the 3:4 aspect ratio the moment the item appears
+            if (sender is FrameworkElement element && element.ActualWidth > 0)
+            {
+                double targetHeight = element.ActualWidth * 1.3333;
+                if (double.IsNaN(element.Height) || Math.Abs(element.Height - targetHeight) > 1.0)
+                {
+                    element.Height = targetHeight;
+                }
+            }
+        }
+
         // ════════════════════════════════════════════════════════════════════
         // CONTINUE READING SCROLL ARROWS
         // ════════════════════════════════════════════════════════════════════
