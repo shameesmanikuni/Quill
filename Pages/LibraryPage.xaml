@@ -11,6 +11,10 @@
     Background="Transparent">
 
     <Page.Resources>
+
+        <!-- ══════════════════════════════════════════════════════
+             CONTINUE READING CARD STYLE
+             ══════════════════════════════════════════════════════ -->
         <Style x:Key="ContinueReadingCardStyle" TargetType="Button">
             <Setter Property="Width" Value="480"/>
             <Setter Property="Height" Value="192"/>
@@ -42,26 +46,27 @@
                                     </VisualState>
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
-
                             <Border x:Name="BaseLayer" CornerRadius="16" BorderThickness="1" BorderBrush="#0D404752">
                                 <Border.Background>
-                                    <AcrylicBrush TintColor="#222222" TintOpacity="0.5" TintLuminosityOpacity="0.8" FallbackColor="#202020" />
+                                    <AcrylicBrush TintColor="#222222" TintOpacity="0.5" TintLuminosityOpacity="0.8" FallbackColor="#202020"/>
                                 </Border.Background>
                             </Border>
-
                             <Border x:Name="HoverLayer" CornerRadius="16" Opacity="0" BorderThickness="1" BorderBrush="#0D404752">
                                 <Border.Background>
-                                    <AcrylicBrush TintColor="#2A2A2A" TintOpacity="0.5" TintLuminosityOpacity="0.8" FallbackColor="#2A2A2A" />
+                                    <AcrylicBrush TintColor="#2A2A2A" TintOpacity="0.5" TintLuminosityOpacity="0.8" FallbackColor="#2A2A2A"/>
                                 </Border.Background>
                             </Border>
-
-                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
+                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                              HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
 
+        <!-- ══════════════════════════════════════════════════════
+             LIBRARY GRID CARD STYLE
+             ══════════════════════════════════════════════════════ -->
         <Style x:Key="LibraryCardStyle" TargetType="Button">
             <Setter Property="Padding" Value="0"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -76,18 +81,74 @@
                         <Grid x:Name="RootGrid" UseLayoutRounding="False" Background="Transparent">
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup x:Name="CommonStates">
-                                    <VisualState x:Name="Normal" />
-                                    <VisualState x:Name="PointerOver" />
-                                    <VisualState x:Name="Pressed" />
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="PointerOver"/>
+                                    <VisualState x:Name="Pressed"/>
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
-                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"/>
+                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Top"
+                                              HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"/>
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
 
+        <!-- ══════════════════════════════════════════════════════
+             LIBRARY LIST CARD STYLE (acrylic, same as CR cards)
+             ══════════════════════════════════════════════════════ -->
+        <Style x:Key="LibraryListCardStyle" TargetType="Button">
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="RootGrid" CornerRadius="14" UseLayoutRounding="False">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="HoverLayer" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.25"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="PointerOver">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="HoverLayer" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.25"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="HoverLayer" Storyboard.TargetProperty="Opacity" To="0.6" Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Border x:Name="BaseLayer" CornerRadius="14" BorderThickness="1" BorderBrush="#0D404752">
+                                <Border.Background>
+                                    <AcrylicBrush TintColor="#222222" TintOpacity="0.5" TintLuminosityOpacity="0.8" FallbackColor="#202020"/>
+                                </Border.Background>
+                            </Border>
+                            <Border x:Name="HoverLayer" CornerRadius="14" Opacity="0" BorderThickness="1" BorderBrush="#0D404752">
+                                <Border.Background>
+                                    <AcrylicBrush TintColor="#2A2A2A" TintOpacity="0.5" TintLuminosityOpacity="0.8" FallbackColor="#2A2A2A"/>
+                                </Border.Background>
+                            </Border>
+                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                              HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ══════════════════════════════════════════════════════
+             ARROW BUTTON STYLE
+             ══════════════════════════════════════════════════════ -->
         <Style x:Key="ArrowButtonStyle" TargetType="Button">
             <Setter Property="Width" Value="48"/>
             <Setter Property="Height" Value="48"/>
@@ -127,12 +188,17 @@
             </Setter>
         </Style>
 
+        <!-- ══════════════════════════════════════════════════════
+             ICON ACTION BUTTON (Sort / Grid-List toggle)
+             Background matches Continue Reading card acrylic
+             ══════════════════════════════════════════════════════ -->
         <Style x:Key="IconActionButtonStyle" TargetType="Button">
             <Setter Property="Width" Value="40"/>
             <Setter Property="Height" Value="40"/>
             <Setter Property="CornerRadius" Value="8"/>
             <Setter Property="Padding" Value="0"/>
-            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#0D404752"/>
             <Setter Property="Foreground" Value="#889299"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -142,7 +208,7 @@
                                 <VisualStateGroup x:Name="CommonStates">
                                     <VisualState x:Name="Normal">
                                         <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetName="HoverOverlay" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="HoverLayer" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2"/>
                                             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
                                                 <DiscreteObjectKeyFrame KeyTime="0">
                                                     <DiscreteObjectKeyFrame.Value>
@@ -154,7 +220,7 @@
                                     </VisualState>
                                     <VisualState x:Name="PointerOver">
                                         <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetName="HoverOverlay" Storyboard.TargetProperty="Opacity" To="0.05" Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="HoverLayer" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2"/>
                                             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
                                                 <DiscreteObjectKeyFrame KeyTime="0">
                                                     <DiscreteObjectKeyFrame.Value>
@@ -164,22 +230,42 @@
                                             </ObjectAnimationUsingKeyFrames>
                                         </Storyboard>
                                     </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="HoverLayer" Storyboard.TargetProperty="Opacity" To="0.6" Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </VisualState>
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
-                            <Border Background="#1B1C1C" CornerRadius="8"/>
-                            <Border x:Name="HoverOverlay" Background="White" Opacity="0" CornerRadius="8" IsHitTestVisible="False"/>
-                            <ContentPresenter x:Name="ContentPresenter" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{TemplateBinding Foreground}"/>
+                            <Border CornerRadius="8" BorderThickness="1" BorderBrush="#0D404752">
+                                <Border.Background>
+                                    <AcrylicBrush TintColor="#222222" TintOpacity="0.5" TintLuminosityOpacity="0.8" FallbackColor="#202020"/>
+                                </Border.Background>
+                            </Border>
+                            <Border x:Name="HoverLayer" CornerRadius="8" Opacity="0" BorderThickness="1" BorderBrush="#0D404752">
+                                <Border.Background>
+                                    <AcrylicBrush TintColor="#2A2A2A" TintOpacity="0.5" TintLuminosityOpacity="0.8" FallbackColor="#2A2A2A"/>
+                                </Border.Background>
+                            </Border>
+                            <ContentPresenter x:Name="ContentPresenter" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                              Foreground="{TemplateBinding Foreground}"/>
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
+
     </Page.Resources>
 
     <ScrollViewer VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Disabled">
         <StackPanel Padding="48,128,48,80" Spacing="72">
 
-            <Grid x:Name="ContinueReadingSection" PointerEntered="ContinueReadingSection_PointerEntered" PointerExited="ContinueReadingSection_PointerExited">
+            <!-- ══════════════════════════════════════════════════════
+                 CONTINUE READING SECTION
+                 ══════════════════════════════════════════════════════ -->
+            <Grid x:Name="ContinueReadingSection"
+                  PointerEntered="ContinueReadingSection_PointerEntered"
+                  PointerExited="ContinueReadingSection_PointerExited">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="32"/>
@@ -187,35 +273,72 @@
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0">
-                    <TextBlock Text="Continue Reading" FontFamily="{StaticResource ManropeFont}" FontSize="35" FontWeight="ExtraBold" Foreground="White" VerticalAlignment="Center"/>
-                    <HyperlinkButton Content="View all history" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="#75D1FF" FontSize="13" FontFamily="{StaticResource InterFont}"/>
+                    <TextBlock Text="Continue Reading" FontFamily="{StaticResource ManropeFont}"
+                               FontSize="35" FontWeight="ExtraBold" Foreground="White" VerticalAlignment="Center"/>
+                    <HyperlinkButton Content="View all history" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                     Foreground="#75D1FF" FontSize="13" FontFamily="{StaticResource InterFont}"/>
                 </Grid>
 
                 <Border Grid.Row="2" Visibility="{x:Bind ViewModel.EmptyRecentBooksVisibility, Mode=OneWay}" Padding="48,0,48,56">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
-                        <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xEA19;" FontSize="48" Foreground="#303840" HorizontalAlignment="Center"/>
-                        <TextBlock Text="No books in progress yet" FontSize="18" FontWeight="SemiBold" Foreground="#505860" HorizontalAlignment="Center" FontFamily="{StaticResource ManropeFont}"/>
-                        <TextBlock Text="Import a book and start your reading journey" FontSize="13" Foreground="#383E46" HorizontalAlignment="Center" FontFamily="{StaticResource InterFont}"/>
+                        <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xEA19;" FontSize="48"
+                                  Foreground="#303840" HorizontalAlignment="Center"/>
+                        <TextBlock Text="No books in progress yet" FontSize="18" FontWeight="SemiBold"
+                                   Foreground="#505860" HorizontalAlignment="Center" FontFamily="{StaticResource ManropeFont}"/>
+                        <TextBlock Text="Import a book and start your reading journey" FontSize="13"
+                                   Foreground="#383E46" HorizontalAlignment="Center" FontFamily="{StaticResource InterFont}"/>
                     </StackPanel>
                 </Border>
 
                 <Grid Grid.Row="2" Visibility="{x:Bind ViewModel.RecentBooksVisibility, Mode=OneWay}">
-                    <ScrollViewer x:Name="ContinueReadingScroll" HorizontalScrollMode="Enabled" VerticalScrollMode="Disabled" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" ViewChanged="ContinueReadingScroll_ViewChanged">
+                    <ScrollViewer x:Name="ContinueReadingScroll"
+                                  HorizontalScrollMode="Enabled" VerticalScrollMode="Disabled"
+                                  HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"
+                                  ViewChanged="ContinueReadingScroll_ViewChanged">
                         <ItemsRepeater ItemsSource="{x:Bind ViewModel.RecentBooks, Mode=OneWay}" Margin="0,0,0,16">
                             <ItemsRepeater.Layout>
                                 <StackLayout Orientation="Horizontal" Spacing="24"/>
                             </ItemsRepeater.Layout>
 
                             <DataTemplate x:DataType="models:Book">
-                                <Button Style="{StaticResource ContinueReadingCardStyle}" Click="BookCard_Click" PointerEntered="ContinueReadingCard_PointerEntered" PointerExited="ContinueReadingCard_PointerExited" Tag="{x:Bind}">
+                                <Button Style="{StaticResource ContinueReadingCardStyle}"
+                                        Click="BookCard_Click"
+                                        PointerEntered="ContinueReadingCard_PointerEntered"
+                                        PointerExited="ContinueReadingCard_PointerExited"
+                                        Tag="{x:Bind}">
+
+                                    <!-- ── Context menu ── -->
+                                    <Button.ContextFlyout>
+                                        <MenuFlyout Placement="BottomEdgeAlignedRight">
+                                            <MenuFlyoutItem Text="Edit" Click="EditBook_Click">
+                                                <MenuFlyoutItem.Icon>
+                                                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE70F;"/>
+                                                </MenuFlyoutItem.Icon>
+                                            </MenuFlyoutItem>
+                                            <MenuFlyoutSeparator/>
+                                            <MenuFlyoutItem Text="Delete" Click="DeleteBook_Click" Foreground="#FF4444">
+                                                <MenuFlyoutItem.Resources>
+                                                    <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPointerOver" Color="#FF4444"/>
+                                                    <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPressed"     Color="#CC3333"/>
+                                                    <SolidColorBrush x:Key="MenuFlyoutItemForegroundPointerOver" Color="White"/>
+                                                    <SolidColorBrush x:Key="MenuFlyoutItemForegroundPressed"     Color="White"/>
+                                                </MenuFlyoutItem.Resources>
+                                                <MenuFlyoutItem.Icon>
+                                                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE74D;"/>
+                                                </MenuFlyoutItem.Icon>
+                                            </MenuFlyoutItem>
+                                        </MenuFlyout>
+                                    </Button.ContextFlyout>
+
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="160"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
 
+                                        <!-- Cover: gradient always behind, Image on top -->
                                         <Grid Grid.Column="0" CornerRadius="16,0,0,16">
-                                            <Border CornerRadius="16,0,0,16" Visibility="{x:Bind PlaceholderVisibility, Mode=OneWay}">
+                                            <Border CornerRadius="16,0,0,16">
                                                 <Border.Background>
                                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                                                         <GradientStop Color="#5127AD" Offset="0.0"/>
@@ -224,13 +347,17 @@
                                                 </Border.Background>
                                             </Border>
                                             <Border CornerRadius="16,0,0,16" Visibility="{x:Bind CoverVisibility, Mode=OneWay}">
-                                                <Grid CornerRadius="16,0,0,16">
-                                                    <Image x:Name="CoverImageElement" Source="{x:Bind CoverImage, Mode=OneWay}" Stretch="UniformToFill" RenderTransformOrigin="0.5,0.5">
-                                                        <Image.RenderTransform>
-                                                            <ScaleTransform ScaleX="1" ScaleY="1"/>
-                                                        </Image.RenderTransform>
-                                                    </Image>
-                                                </Grid>
+                                                <!-- Tag carries the Book so ImageFailed can reload it -->
+                                                <Image x:Name="CoverImageElement"
+                                                       Source="{x:Bind CoverImage, Mode=OneWay}"
+                                                       Stretch="UniformToFill"
+                                                       RenderTransformOrigin="0.5,0.5"
+                                                       Tag="{x:Bind}"
+                                                       ImageFailed="CoverImage_ImageFailed">
+                                                    <Image.RenderTransform>
+                                                        <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                                    </Image.RenderTransform>
+                                                </Image>
                                             </Border>
                                         </Grid>
 
@@ -241,19 +368,29 @@
                                             </Grid.RowDefinitions>
 
                                             <StackPanel Grid.Row="0" Spacing="6" VerticalAlignment="Top">
-                                                <TextBlock Text="{x:Bind Title, Mode=OneWay}" FontSize="20" FontWeight="Bold" Foreground="White" FontFamily="{StaticResource ManropeFont}" MaxLines="2" TextWrapping="Wrap" TextTrimming="WordEllipsis"/>
-                                                <TextBlock Text="{x:Bind Author, Mode=OneWay}" FontSize="14" Foreground="#889299" FontFamily="{StaticResource InterFont}"/>
+                                                <TextBlock Text="{x:Bind Title, Mode=OneWay}" FontSize="20" FontWeight="Bold"
+                                                           Foreground="White" FontFamily="{StaticResource ManropeFont}"
+                                                           MaxLines="2" TextWrapping="Wrap" TextTrimming="WordEllipsis"/>
+                                                <TextBlock Text="{x:Bind Author, Mode=OneWay}" FontSize="14"
+                                                           Foreground="#889299" FontFamily="{StaticResource InterFont}"/>
                                             </StackPanel>
 
                                             <StackPanel Grid.Row="1" Spacing="8">
                                                 <Grid>
-                                                    <TextBlock Text="{x:Bind ReadingProgressText, Mode=OneWay}" FontSize="15" FontWeight="Bold" Foreground="#75D1FF" FontFamily="{StaticResource InterFont}" VerticalAlignment="Bottom"/>
-                                                    <TextBlock Text="{x:Bind PageProgressText, Mode=OneWay}" FontSize="13" Foreground="#889299" FontFamily="{StaticResource InterFont}" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                                                    <TextBlock Text="{x:Bind ReadingProgressText, Mode=OneWay}" FontSize="15"
+                                                               FontWeight="Bold" Foreground="#75D1FF"
+                                                               FontFamily="{StaticResource InterFont}" VerticalAlignment="Bottom"/>
+                                                    <TextBlock Text="{x:Bind PageProgressText, Mode=OneWay}" FontSize="13"
+                                                               Foreground="#889299" FontFamily="{StaticResource InterFont}"
+                                                               HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                                 </Grid>
-                                                <ProgressBar Value="{x:Bind LastPageRead, Mode=OneWay}" Maximum="{x:Bind DisplayTotalPages, Mode=OneWay}" Height="8" MinHeight="8" CornerRadius="4" BorderThickness="0" Foreground="#75D1FF" Background="#0E0E0E" Margin="0,2,0,0">
+                                                <ProgressBar Value="{x:Bind LastPageRead, Mode=OneWay}"
+                                                             Maximum="{x:Bind DisplayTotalPages, Mode=OneWay}"
+                                                             Height="8" MinHeight="8" CornerRadius="4"
+                                                             BorderThickness="0" Margin="0,2,0,0">
                                                     <ProgressBar.Resources>
                                                         <x:Double x:Key="ProgressBarTrackHeight">8</x:Double>
-                                                        <SolidColorBrush x:Key="ProgressBarTrackFill" Color="#0E0E0E"/>
+                                                        <SolidColorBrush x:Key="ProgressBarTrackFill"          Color="#0E0E0E"/>
                                                         <SolidColorBrush x:Key="ProgressBarIndicatorForeground" Color="#75D1FF"/>
                                                     </ProgressBar.Resources>
                                                 </ProgressBar>
@@ -265,15 +402,24 @@
                         </ItemsRepeater>
                     </ScrollViewer>
 
-                    <Button x:Name="LeftArrowBtn" Style="{StaticResource ArrowButtonStyle}" Visibility="{x:Bind ViewModel.ArrowsVisibility, Mode=OneWay}" Opacity="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="-20,0,0,0" Click="LeftArrow_Click">
+                    <Button x:Name="LeftArrowBtn" Style="{StaticResource ArrowButtonStyle}"
+                            Visibility="{x:Bind ViewModel.ArrowsVisibility, Mode=OneWay}"
+                            Opacity="0" HorizontalAlignment="Left" VerticalAlignment="Center"
+                            Margin="-20,0,0,0" Click="LeftArrow_Click">
                         <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE76B;" FontSize="22"/>
                     </Button>
-                    <Button x:Name="RightArrowBtn" Style="{StaticResource ArrowButtonStyle}" Visibility="{x:Bind ViewModel.ArrowsVisibility, Mode=OneWay}" Opacity="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,-20,0" Click="RightArrow_Click">
+                    <Button x:Name="RightArrowBtn" Style="{StaticResource ArrowButtonStyle}"
+                            Visibility="{x:Bind ViewModel.ArrowsVisibility, Mode=OneWay}"
+                            Opacity="0" HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Margin="0,0,-20,0" Click="RightArrow_Click">
                         <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE76C;" FontSize="22"/>
                     </Button>
                 </Grid>
             </Grid>
 
+            <!-- ══════════════════════════════════════════════════════
+                 MY LIBRARY SECTION
+                 ══════════════════════════════════════════════════════ -->
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -282,63 +428,71 @@
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0">
-                    <TextBlock Text="My Library" FontFamily="{StaticResource ManropeFont}" FontSize="33" FontWeight="ExtraBold" Foreground="White" VerticalAlignment="Center"/>
+                    <TextBlock Text="My Library" FontFamily="{StaticResource ManropeFont}"
+                               FontSize="33" FontWeight="ExtraBold" Foreground="White" VerticalAlignment="Center"/>
                     <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="12">
                         <Button Style="{StaticResource IconActionButtonStyle}">
-                            <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xE164;" FontSize="26"/>
+                            <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xE164;" FontSize="18"/>
                         </Button>
-                        <Button Style="{StaticResource IconActionButtonStyle}">
-                            <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xE9B0;" FontSize="26"/>
+                        <Button x:Name="ToggleViewBtn" Style="{StaticResource IconActionButtonStyle}" Click="ToggleView_Click">
+                            <FontIcon x:Name="ToggleViewIcon" FontFamily="Segoe MDL2 Assets" Glyph="&#xE9B0;" FontSize="18"/>
                         </Button>
                     </StackPanel>
                 </Grid>
 
                 <Border Grid.Row="2" Visibility="{x:Bind ViewModel.EmptyBooksVisibility, Mode=OneWay}" Padding="48,0,48,96">
                     <StackPanel HorizontalAlignment="Center" Spacing="20">
-                        <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xE02F;" FontSize="64" Foreground="#303840" HorizontalAlignment="Center"/>
-                        <TextBlock Text="Your library is empty" FontSize="22" FontWeight="Bold" Foreground="#505860" HorizontalAlignment="Center" FontFamily="{StaticResource ManropeFont}"/>
-                        <TextBlock Text="Click &#x2018;Import&#x2019; in the top bar to add your first book" FontSize="14" Foreground="#383E46" HorizontalAlignment="Center" FontFamily="{StaticResource InterFont}"/>
+                        <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xE02F;" FontSize="64"
+                                  Foreground="#303840" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Your library is empty" FontSize="22" FontWeight="Bold"
+                                   Foreground="#505860" HorizontalAlignment="Center" FontFamily="{StaticResource ManropeFont}"/>
+                        <TextBlock Text="Click &#x2018;Import&#x2019; in the top bar to add your first book" FontSize="14"
+                                   Foreground="#383E46" HorizontalAlignment="Center" FontFamily="{StaticResource InterFont}"/>
                     </StackPanel>
                 </Border>
 
-                <ItemsRepeater Grid.Row="2" x:Name="LibraryGrid" HorizontalAlignment="Stretch" ItemsSource="{x:Bind ViewModel.AllBooks, Mode=OneWay}" Visibility="{x:Bind ViewModel.BooksGridVisibility, Mode=OneWay}">
+                <!-- ── GRID VIEW ───────────────────────────────────── -->
+                <ItemsRepeater Grid.Row="2" x:Name="LibraryGrid"
+                               HorizontalAlignment="Stretch"
+                               ItemsSource="{x:Bind ViewModel.AllBooks, Mode=OneWay}"
+                               Visibility="{x:Bind ViewModel.BooksGridVisibility, Mode=OneWay}">
                     <ItemsRepeater.Layout>
-                        <UniformGridLayout MaximumRowsOrColumns="5" MinItemWidth="200" MinColumnSpacing="32" MinRowSpacing="48" ItemsStretch="Fill"/>
+                        <UniformGridLayout MaximumRowsOrColumns="5" MinItemWidth="200"
+                                           MinColumnSpacing="32" MinRowSpacing="48" ItemsStretch="Fill"/>
                     </ItemsRepeater.Layout>
 
                     <DataTemplate x:DataType="models:Book">
-                        <Button Style="{StaticResource LibraryCardStyle}" Click="BookCard_Click" Tag="{x:Bind}" PointerEntered="LibraryCard_PointerEntered" PointerExited="LibraryCard_PointerExited">
+                        <Button Style="{StaticResource LibraryCardStyle}"
+                                Click="BookCard_Click" Tag="{x:Bind}"
+                                PointerEntered="LibraryCard_PointerEntered"
+                                PointerExited="LibraryCard_PointerExited">
 
                             <Button.ContextFlyout>
                                 <MenuFlyout Placement="BottomEdgeAlignedRight">
-
                                     <MenuFlyoutItem Text="Edit" Click="EditBook_Click">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE70F;"/>
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
-
                                     <MenuFlyoutSeparator/>
-
                                     <MenuFlyoutItem Text="Delete" Click="DeleteBook_Click" Foreground="#FF4444">
                                         <MenuFlyoutItem.Resources>
                                             <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPointerOver" Color="#FF4444"/>
-                                            <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPressed" Color="#CC3333"/>
-
+                                            <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPressed"     Color="#CC3333"/>
                                             <SolidColorBrush x:Key="MenuFlyoutItemForegroundPointerOver" Color="White"/>
-                                            <SolidColorBrush x:Key="MenuFlyoutItemForegroundPressed" Color="White"/>
+                                            <SolidColorBrush x:Key="MenuFlyoutItemForegroundPressed"     Color="White"/>
                                         </MenuFlyoutItem.Resources>
                                         <MenuFlyoutItem.Icon>
-                                            <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE74D;" />
+                                            <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE74D;"/>
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
-
                                 </MenuFlyout>
                             </Button.ContextFlyout>
 
                             <StackPanel Spacing="0">
                                 <Grid Margin="0,12,0,14">
-                                    <Border x:Name="CoverShadow" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="12,0,12,-16" Height="30" CornerRadius="10" Opacity="0">
+                                    <Border x:Name="CoverShadow" VerticalAlignment="Bottom" HorizontalAlignment="Stretch"
+                                            Margin="12,0,12,-16" Height="30" CornerRadius="10" Opacity="0">
                                         <Border.Background>
                                             <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
                                                 <GradientStop Color="#80000000" Offset="0"/>
@@ -347,11 +501,14 @@
                                         </Border.Background>
                                     </Border>
 
-                                    <Grid x:Name="CoverContainer" CornerRadius="12" SizeChanged="Cover_SizeChanged" Loaded="Cover_Loaded">
+                                    <Grid x:Name="CoverContainer" CornerRadius="12"
+                                          SizeChanged="Cover_SizeChanged" Loaded="Cover_Loaded">
                                         <Grid.RenderTransform>
-                                            <TranslateTransform />
+                                            <TranslateTransform/>
                                         </Grid.RenderTransform>
-                                        <Border Visibility="{x:Bind PlaceholderVisibility, Mode=OneWay}" CornerRadius="12">
+
+                                        <!-- Gradient placeholder — always rendered, sits behind Image -->
+                                        <Border CornerRadius="12">
                                             <Border.Background>
                                                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                                                     <GradientStop Color="#1A2D5A" Offset="0.0"/>
@@ -359,43 +516,149 @@
                                                     <GradientStop Color="#0080A8" Offset="1.0"/>
                                                 </LinearGradientBrush>
                                             </Border.Background>
-                                            <TextBlock Text="{x:Bind Title}" FontFamily="{StaticResource ManropeFont}" FontSize="40" Opacity="0.2" FontWeight="Black" HorizontalAlignment="Center" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxLines="1"/>
+                                            <TextBlock Text="{x:Bind Title}" FontFamily="{StaticResource ManropeFont}"
+                                                       FontSize="40" Opacity="0.2" FontWeight="Black"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis" MaxLines="1"
+                                                       Visibility="{x:Bind PlaceholderVisibility, Mode=OneWay}"/>
                                         </Border>
 
-                                        <Border Visibility="{x:Bind CoverVisibility, Mode=OneWay}" CornerRadius="12">
-                                            <Border.Background>
-                                                <ImageBrush ImageSource="{x:Bind CoverImage, Mode=OneWay}" Stretch="UniformToFill"/>
-                                            </Border.Background>
+                                        <!-- Cover image: Tag carries Book so ImageFailed can reload -->
+                                        <Border CornerRadius="12" Visibility="{x:Bind CoverVisibility, Mode=OneWay}">
+                                            <Image Source="{x:Bind CoverImage, Mode=OneWay}"
+                                                   Stretch="UniformToFill"
+                                                   Tag="{x:Bind}"
+                                                   ImageFailed="CoverImage_ImageFailed"/>
                                         </Border>
                                     </Grid>
                                 </Grid>
 
-                                <TextBlock x:Name="BookTitleText" Text="{x:Bind Title, Mode=OneWay}" Height="50" Margin="0,0,0,6" FontSize="18" FontWeight="Bold" Foreground="#E5E2E1" FontFamily="{StaticResource InterFont}" TextWrapping="Wrap" MaxLines="2" TextTrimming="WordEllipsis"/>
+                                <TextBlock x:Name="BookTitleText" Text="{x:Bind Title, Mode=OneWay}"
+                                           Height="50" Margin="0,0,0,6" FontSize="18" FontWeight="Bold"
+                                           Foreground="#E5E2E1" FontFamily="{StaticResource InterFont}"
+                                           TextWrapping="Wrap" MaxLines="2" TextTrimming="WordEllipsis"/>
 
                                 <Grid Margin="0,0,0,8">
-                                    <TextBlock Text="{x:Bind ReadingProgressText, Mode=OneWay}" FontSize="13" FontWeight="Medium" Foreground="#889299" FontFamily="{StaticResource InterFont}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
-                                    <TextBlock Text="{x:Bind PageProgressText, Mode=OneWay}" FontSize="13" Foreground="#889299" FontFamily="{StaticResource InterFont}" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                                    <TextBlock Text="{x:Bind ReadingProgressText, Mode=OneWay}" FontSize="13"
+                                               FontWeight="Medium" Foreground="#889299"
+                                               FontFamily="{StaticResource InterFont}"
+                                               HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+                                    <TextBlock Text="{x:Bind PageProgressText, Mode=OneWay}" FontSize="13"
+                                               Foreground="#889299" FontFamily="{StaticResource InterFont}"
+                                               HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                 </Grid>
 
-                                <ProgressBar Value="{x:Bind LastPageRead, Mode=OneWay}" 
-             Maximum="{x:Bind DisplayTotalPages, Mode=OneWay}" 
-             Height="5" 
-             MinHeight="5"
-             CornerRadius="2.5"
-             BorderThickness="0" 
-             Foreground="#5127AD" 
-             Background="#0E0E0E">
+                                <ProgressBar Value="{x:Bind LastPageRead, Mode=OneWay}"
+                                             Maximum="{x:Bind DisplayTotalPages, Mode=OneWay}"
+                                             Height="5" MinHeight="5" CornerRadius="2.5" BorderThickness="0">
                                     <ProgressBar.Resources>
                                         <x:Double x:Key="ProgressBarTrackHeight">5</x:Double>
-                                        <SolidColorBrush x:Key="ProgressBarTrackFill" Color="#0E0E0E"/>
+                                        <SolidColorBrush x:Key="ProgressBarTrackFill"          Color="#0E0E0E"/>
                                         <SolidColorBrush x:Key="ProgressBarIndicatorForeground" Color="#5127AD"/>
                                     </ProgressBar.Resources>
                                 </ProgressBar>
-
                             </StackPanel>
                         </Button>
                     </DataTemplate>
                 </ItemsRepeater>
+
+                <!-- ── LIST VIEW ───────────────────────────────────── -->
+                <ItemsRepeater Grid.Row="2" x:Name="LibraryList"
+                               HorizontalAlignment="Stretch"
+                               ItemsSource="{x:Bind ViewModel.AllBooks, Mode=OneWay}"
+                               Visibility="Collapsed">
+                    <ItemsRepeater.Layout>
+                        <StackLayout Orientation="Vertical" Spacing="10"/>
+                    </ItemsRepeater.Layout>
+
+                    <DataTemplate x:DataType="models:Book">
+                        <Button Style="{StaticResource LibraryListCardStyle}"
+                                Click="BookCard_Click" Tag="{x:Bind}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch">
+
+                            <Button.ContextFlyout>
+                                <MenuFlyout Placement="BottomEdgeAlignedRight">
+                                    <MenuFlyoutItem Text="Edit" Click="EditBook_Click">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE70F;"/>
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutSeparator/>
+                                    <MenuFlyoutItem Text="Delete" Click="DeleteBook_Click" Foreground="#FF4444">
+                                        <MenuFlyoutItem.Resources>
+                                            <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPointerOver" Color="#FF4444"/>
+                                            <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPressed"     Color="#CC3333"/>
+                                            <SolidColorBrush x:Key="MenuFlyoutItemForegroundPointerOver" Color="White"/>
+                                            <SolidColorBrush x:Key="MenuFlyoutItemForegroundPressed"     Color="White"/>
+                                        </MenuFlyoutItem.Resources>
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE74D;"/>
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                </MenuFlyout>
+                            </Button.ContextFlyout>
+
+                            <Grid Padding="16" ColumnSpacing="20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="64"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="200"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Thumbnail -->
+                                <Grid Grid.Column="0" Width="64" Height="86" VerticalAlignment="Center">
+                                    <Border CornerRadius="8">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="#1A2D5A" Offset="0.0"/>
+                                                <GradientStop Color="#5127AD" Offset="0.6"/>
+                                                <GradientStop Color="#0080A8" Offset="1.0"/>
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <Border CornerRadius="8" Visibility="{x:Bind CoverVisibility, Mode=OneWay}">
+                                        <Image Source="{x:Bind CoverImage, Mode=OneWay}"
+                                               Stretch="UniformToFill"
+                                               Tag="{x:Bind}"
+                                               ImageFailed="CoverImage_ImageFailed"/>
+                                    </Border>
+                                </Grid>
+
+                                <!-- Title + Author -->
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+                                    <TextBlock Text="{x:Bind Title, Mode=OneWay}" FontSize="17" FontWeight="SemiBold"
+                                               Foreground="#E5E2E1" FontFamily="{StaticResource InterFont}"
+                                               TextWrapping="Wrap" MaxLines="2" TextTrimming="WordEllipsis"/>
+                                    <TextBlock Text="{x:Bind Author, Mode=OneWay}" FontSize="13"
+                                               Foreground="#889299" FontFamily="{StaticResource InterFont}"/>
+                                </StackPanel>
+
+                                <!-- Progress -->
+                                <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="8">
+                                    <Grid>
+                                        <TextBlock Text="{x:Bind ReadingProgressText, Mode=OneWay}" FontSize="13"
+                                                   FontWeight="Medium" Foreground="#75D1FF"
+                                                   FontFamily="{StaticResource InterFont}" HorizontalAlignment="Left"/>
+                                        <TextBlock Text="{x:Bind PageProgressText, Mode=OneWay}" FontSize="12"
+                                                   Foreground="#889299" FontFamily="{StaticResource InterFont}"
+                                                   HorizontalAlignment="Right"/>
+                                    </Grid>
+                                    <ProgressBar Value="{x:Bind LastPageRead, Mode=OneWay}"
+                                                 Maximum="{x:Bind DisplayTotalPages, Mode=OneWay}"
+                                                 Height="5" MinHeight="5" CornerRadius="2.5" BorderThickness="0">
+                                        <ProgressBar.Resources>
+                                            <x:Double x:Key="ProgressBarTrackHeight">5</x:Double>
+                                            <SolidColorBrush x:Key="ProgressBarTrackFill"          Color="#1A1A1A"/>
+                                            <SolidColorBrush x:Key="ProgressBarIndicatorForeground" Color="#5127AD"/>
+                                        </ProgressBar.Resources>
+                                    </ProgressBar>
+                                </StackPanel>
+                            </Grid>
+                        </Button>
+                    </DataTemplate>
+                </ItemsRepeater>
+
             </Grid>
         </StackPanel>
     </ScrollViewer>

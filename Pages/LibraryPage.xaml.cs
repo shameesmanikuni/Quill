@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using Quill.ViewModels;
 using System;
@@ -13,6 +14,7 @@ namespace Quill.Pages
     {
         public LibraryViewModel ViewModel { get; } = new LibraryViewModel();
         private bool _sectionHovered = false;
+        private bool _isListView = false;
         private const double CardScrollWidth = 512;
 
         public LibraryPage()
@@ -30,6 +32,34 @@ namespace Quill.Pages
         }
 
         // ════════════════════════════════════════════════════════════════════
+        // COVER IMAGE BUG FIX — reload on failure (virtualization cache miss)
+        // ════════════════════════════════════════════════════════════════════
+
+        /// <summary>
+        /// Handles ImageFailed for <Image> elements (Continue Reading cards).
+        /// Forces a fresh URI reload so the cover reappears after scroll virtualization.
+        /// </summary>
+        private void CoverImage_ImageFailed(object sender, ExceptionRoutedEventArgs e)
+        {
+            // Updated to use img.Tag to match XAML x:Bind
+            if (sender is Image img && img.Tag is Quill.Models.Book book && book.HasValidCover)
+            {
+                try
+                {
+                    string uriPath = $"file:///{book.CoverPath.Replace('\\', '/')}";
+                    var bmp = new BitmapImage();
+                    bmp.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+                    bmp.UriSource = new Uri(uriPath);
+                    img.Source = bmp;
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Cover reload failed: {ex.Message}");
+                }
+            }
+        }
+
+        // ════════════════════════════════════════════════════════════════════
         // ASPECT RATIO HANDLER 
         // ════════════════════════════════════════════════════════════════════
         private void Cover_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -38,22 +68,42 @@ namespace Quill.Pages
             {
                 double targetHeight = e.NewSize.Width * 1.3333;
                 if (double.IsNaN(element.Height) || Math.Abs(element.Height - targetHeight) > 1.0)
-                {
                     element.Height = targetHeight;
-                }
             }
         }
 
         private void Cover_Loaded(object sender, RoutedEventArgs e)
         {
-            // ItemsRepeater virtualization safety net: forces the 3:4 aspect ratio the moment the item appears
             if (sender is FrameworkElement element && element.ActualWidth > 0)
             {
                 double targetHeight = element.ActualWidth * 1.3333;
                 if (double.IsNaN(element.Height) || Math.Abs(element.Height - targetHeight) > 1.0)
-                {
                     element.Height = targetHeight;
-                }
+            }
+        }
+
+        // ════════════════════════════════════════════════════════════════════
+        // GRID / LIST VIEW TOGGLE
+        // ════════════════════════════════════════════════════════════════════
+        private void ToggleView_Click(object sender, RoutedEventArgs e)
+        {
+            _isListView = !_isListView;
+
+            if (_isListView)
+            {
+                // Switch to list view
+                LibraryGrid.Visibility = Visibility.Collapsed;
+                LibraryList.Visibility = Visibility.Visible;
+                // E896 = List icon (Segoe MDL2 Assets)
+                ToggleViewIcon.Glyph = "\uE896";
+            }
+            else
+            {
+                // Switch back to grid view
+                LibraryGrid.Visibility = Visibility.Visible;
+                LibraryList.Visibility = Visibility.Collapsed;
+                // E9B0 = Grid icon
+                ToggleViewIcon.Glyph = "\uE9B0";
             }
         }
 
@@ -99,7 +149,7 @@ namespace Quill.Pages
         {
             if (sender is Button btn && FindVisualChild<Image>(btn, "CoverImageElement")?.RenderTransform is ScaleTransform st)
             {
-                Canvas.SetZIndex(btn, 100); // Prevent clipping
+                Canvas.SetZIndex(btn, 100);
                 AnimateDouble(st, "ScaleX", 1.05, 400);
                 AnimateDouble(st, "ScaleY", 1.05, 400);
             }
@@ -119,12 +169,9 @@ namespace Quill.Pages
         {
             if (sender is Button btn)
             {
-                // FIXED: Forces the hovered card to the absolute front so it doesn't slide under the UI above it
                 Canvas.SetZIndex(btn, 100);
-
                 if (FindVisualChild<TextBlock>(btn, "BookTitleText") is TextBlock text) AnimateTextColor(text, Windows.UI.Color.FromArgb(255, 117, 209, 255), 300);
                 if (FindVisualChild<Border>(btn, "CoverShadow") is Border shadow) AnimateDouble(shadow, "Opacity", 1.0, 300);
-
                 if (FindVisualChild<Grid>(btn, "CoverContainer") is Grid cover)
                 {
                     EnsureTranslateTransform(cover);
@@ -137,11 +184,9 @@ namespace Quill.Pages
         {
             if (sender is Button btn)
             {
-                Canvas.SetZIndex(btn, 0); // Reset depth
-
+                Canvas.SetZIndex(btn, 0);
                 if (FindVisualChild<TextBlock>(btn, "BookTitleText") is TextBlock text) AnimateTextColor(text, Windows.UI.Color.FromArgb(255, 229, 226, 225), 300);
                 if (FindVisualChild<Border>(btn, "CoverShadow") is Border shadow) AnimateDouble(shadow, "Opacity", 0.0, 300);
-
                 if (FindVisualChild<Grid>(btn, "CoverContainer") is Grid cover)
                 {
                     EnsureTranslateTransform(cover);
@@ -150,7 +195,6 @@ namespace Quill.Pages
             }
         }
 
-        // OPTIMIZATION: One unified method for Opacity, Translate Y, and Scale animations
         private void AnimateDouble(DependencyObject target, string propertyPath, double toValue, int durationMs)
         {
             var storyboard = new Storyboard();
@@ -205,14 +249,101 @@ namespace Quill.Pages
         {
             if (sender is MenuFlyoutItem menuItem && menuItem.DataContext is Quill.Models.Book book)
             {
-                var inputBox = new TextBox { PlaceholderText = "Enter new title", Text = book.Title, SelectionStart = 0, SelectionLength = book.Title?.Length ?? 0 };
-                var dialog = new ContentDialog { Title = "Edit Book", PrimaryButtonText = "Save", CloseButtonText = "Cancel", DefaultButton = ContentDialogButton.Primary, XamlRoot = this.XamlRoot, Content = inputBox };
+                // ── Modern Edit Dialog ───────────────────────────────────────
+                var titleBox = new TextBox
+                {
+                    PlaceholderText = "Book title",
+                    Text = book.Title ?? string.Empty,
+                    SelectionStart = 0,
+                    SelectionLength = book.Title?.Length ?? 0,
+                    FontFamily = new FontFamily("Segoe UI Variable"),
+                    FontSize = 15,
+                    CornerRadius = new CornerRadius(10),
+                    Padding = new Thickness(14, 12, 14, 12),
+                    Background = new SolidColorBrush(Windows.UI.Color.FromArgb(30, 255, 255, 255)),
+                    Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 229, 226, 225)),
+                    BorderThickness = new Thickness(1),
+                    BorderBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(40, 255, 255, 255)),
+                };
+
+                var authorBox = new TextBox
+                {
+                    PlaceholderText = "Author name",
+                    Text = book.Author ?? string.Empty,
+                    FontFamily = new FontFamily("Segoe UI Variable"),
+                    FontSize = 15,
+                    CornerRadius = new CornerRadius(10),
+                    Padding = new Thickness(14, 12, 14, 12),
+                    Background = new SolidColorBrush(Windows.UI.Color.FromArgb(30, 255, 255, 255)),
+                    Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 229, 226, 225)),
+                    BorderThickness = new Thickness(1),
+                    BorderBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(40, 255, 255, 255)),
+                };
+
+                var titleLabel = new TextBlock
+                {
+                    Text = "Title",
+                    FontSize = 12,
+                    FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+                    Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(180, 136, 146, 153)),
+                    Margin = new Thickness(2, 0, 0, 6),
+                    FontFamily = new FontFamily("Segoe UI Variable"),
+                };
+
+                var authorLabel = new TextBlock
+                {
+                    Text = "Author",
+                    FontSize = 12,
+                    FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+                    Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(180, 136, 146, 153)),
+                    Margin = new Thickness(2, 0, 0, 6),
+                    FontFamily = new FontFamily("Segoe UI Variable"),
+                };
+
+                var content = new StackPanel { Spacing = 20, MinWidth = 360 };
+                var titleGroup = new StackPanel { Spacing = 0 };
+                titleGroup.Children.Add(titleLabel);
+                titleGroup.Children.Add(titleBox);
+                var authorGroup = new StackPanel { Spacing = 0 };
+                authorGroup.Children.Add(authorLabel);
+                authorGroup.Children.Add(authorBox);
+                content.Children.Add(titleGroup);
+                content.Children.Add(authorGroup);
+
+                var dialog = new ContentDialog
+                {
+                    Title = "Edit Book",
+                    PrimaryButtonText = "Save",
+                    CloseButtonText = "Cancel",
+                    DefaultButton = ContentDialogButton.Primary,
+                    XamlRoot = this.XamlRoot,
+                    Content = content,
+                    // Style the dialog to match the dark theme
+                    RequestedTheme = ElementTheme.Dark,
+                };
+
                 if (await dialog.ShowAsync() == ContentDialogResult.Primary)
                 {
-                    var newTitle = inputBox.Text?.Trim();
+                    var newTitle = titleBox.Text?.Trim();
+                    var newAuthor = authorBox.Text?.Trim();
+
+                    bool changed = false;
+
                     if (!string.IsNullOrEmpty(newTitle) && newTitle != book.Title)
                     {
-                        await Quill.Services.LibraryService.Instance.RenameBookAsync(book.Id, newTitle);
+                        book.Title = newTitle;
+                        changed = true;
+                    }
+
+                    if (!string.IsNullOrEmpty(newAuthor) && newAuthor != book.Author)
+                    {
+                        book.Author = newAuthor;
+                        changed = true;
+                    }
+
+                    if (changed)
+                    {
+                        await Quill.Services.LibraryService.Instance.UpdateBookAsync(book);
                         await ViewModel.RefreshAsync();
                     }
                 }
