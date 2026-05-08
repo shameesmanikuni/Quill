@@ -181,9 +181,9 @@
     Padding="48,0,48,0">
 
             <Grid.Background>
-                <AcrylicBrush TintColor="#131313" 
-                      TintOpacity="0.6" 
-                      FallbackColor="#131313" 
+                <AcrylicBrush TintColor="#111111" 
+                      TintOpacity="0.8" 
+                      FallbackColor="#111111" 
                       TintLuminosityOpacity="0.3"/>
             </Grid.Background>
 
