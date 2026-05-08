@@ -41,15 +41,14 @@ namespace Quill.Pages
         /// </summary>
         private void CoverImage_ImageFailed(object sender, ExceptionRoutedEventArgs e)
         {
-            // Updated to use img.Tag to match XAML x:Bind
             if (sender is Image img && img.Tag is Quill.Models.Book book && book.HasValidCover)
             {
                 try
                 {
-                    string uriPath = $"file:///{book.CoverPath.Replace('\\', '/')}";
+                    // Let the Uri class safely handle spaces and local pathing
                     var bmp = new BitmapImage();
                     bmp.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-                    bmp.UriSource = new Uri(uriPath);
+                    bmp.UriSource = new Uri(book.CoverPath, UriKind.Absolute);
                     img.Source = bmp;
                 }
                 catch (Exception ex)
@@ -88,6 +87,11 @@ namespace Quill.Pages
         private void ToggleView_Click(object sender, RoutedEventArgs e)
         {
             _isListView = !_isListView;
+
+            if (this.Resources.TryGetValue("SymbolFont", out object resource) && resource is FontFamily symbolFont)
+            {
+                ToggleViewIcon.FontFamily = symbolFont;
+            }
 
             if (_isListView)
             {

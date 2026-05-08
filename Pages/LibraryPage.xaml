@@ -384,8 +384,8 @@
                                                                Foreground="#889299" FontFamily="{StaticResource InterFont}"
                                                                HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                                 </Grid>
-                                                <ProgressBar Value="{x:Bind LastPageRead, Mode=OneWay}"
-                                                             Maximum="{x:Bind DisplayTotalPages, Mode=OneWay}"
+                                                <ProgressBar Value="{x:Bind LastPageRead, Mode=OneWay, FallbackValue=0}"
+                                                             Maximum="{x:Bind DisplayTotalPages, Mode=OneWay, FallbackValue=100}"
                                                              Height="8" MinHeight="8" CornerRadius="4"
                                                              BorderThickness="0" Margin="0,2,0,0">
                                                     <ProgressBar.Resources>
@@ -432,10 +432,10 @@
                                FontSize="33" FontWeight="ExtraBold" Foreground="White" VerticalAlignment="Center"/>
                     <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="12">
                         <Button Style="{StaticResource IconActionButtonStyle}">
-                            <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xE164;" FontSize="18"/>
+                            <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xE164;" FontSize="26"/>
                         </Button>
                         <Button x:Name="ToggleViewBtn" Style="{StaticResource IconActionButtonStyle}" Click="ToggleView_Click">
-                            <FontIcon x:Name="ToggleViewIcon" FontFamily="Segoe MDL2 Assets" Glyph="&#xE9B0;" FontSize="18"/>
+                            <FontIcon x:Name="ToggleViewIcon" FontFamily="{StaticResource SymbolFont}" Glyph="&#xE9B0;" FontSize="26"/>
                         </Button>
                     </StackPanel>
                 </Grid>
@@ -548,13 +548,12 @@
                                                HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                 </Grid>
 
-                                <ProgressBar Value="{x:Bind LastPageRead, Mode=OneWay}"
-                                             Maximum="{x:Bind DisplayTotalPages, Mode=OneWay}"
-                                             Height="5" MinHeight="5" CornerRadius="2.5" BorderThickness="0">
+                                <ProgressBar Value="{x:Bind LastPageRead, Mode=OneWay, FallbackValue=0}"
+                                             Maximum="{x:Bind DisplayTotalPages, Mode=OneWay, FallbackValue=100}"
+                                             Height="5" MinHeight="5" CornerRadius="2.5" BorderThickness="0" Foreground="#5127AD">
                                     <ProgressBar.Resources>
                                         <x:Double x:Key="ProgressBarTrackHeight">5</x:Double>
                                         <SolidColorBrush x:Key="ProgressBarTrackFill"          Color="#0E0E0E"/>
-                                        <SolidColorBrush x:Key="ProgressBarIndicatorForeground" Color="#5127AD"/>
                                     </ProgressBar.Resources>
                                 </ProgressBar>
                             </StackPanel>
@@ -644,13 +643,13 @@
                                                    Foreground="#889299" FontFamily="{StaticResource InterFont}"
                                                    HorizontalAlignment="Right"/>
                                     </Grid>
-                                    <ProgressBar Value="{x:Bind LastPageRead, Mode=OneWay}"
-                                                 Maximum="{x:Bind DisplayTotalPages, Mode=OneWay}"
+                                    <ProgressBar Value="{x:Bind LastPageRead, Mode=OneWay, FallbackValue=0}"
+                                                 Maximum="{x:Bind DisplayTotalPages, Mode=OneWay, FallbackValue=100}"
                                                  Height="5" MinHeight="5" CornerRadius="2.5" BorderThickness="0">
                                         <ProgressBar.Resources>
                                             <x:Double x:Key="ProgressBarTrackHeight">5</x:Double>
                                             <SolidColorBrush x:Key="ProgressBarTrackFill"          Color="#1A1A1A"/>
-                                            <SolidColorBrush x:Key="ProgressBarIndicatorForeground" Color="#5127AD"/>
+                                            
                                         </ProgressBar.Resources>
                                     </ProgressBar>
                                 </StackPanel>
