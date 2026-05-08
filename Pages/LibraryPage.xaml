@@ -11,7 +11,6 @@
     Background="Transparent">
 
     <Page.Resources>
-
         <Style x:Key="ContinueReadingCardStyle" TargetType="Button">
             <Setter Property="Width" Value="480"/>
             <Setter Property="Height" Value="192"/>
@@ -46,19 +45,13 @@
 
                             <Border x:Name="BaseLayer" CornerRadius="16" BorderThickness="1" BorderBrush="#0D404752">
                                 <Border.Background>
-                                    <AcrylicBrush TintColor="#222222" 
-                                                  TintOpacity="0.5" 
-                                                  TintLuminosityOpacity="0.8" 
-                                                  FallbackColor="#202020" />
+                                    <AcrylicBrush TintColor="#222222" TintOpacity="0.5" TintLuminosityOpacity="0.8" FallbackColor="#202020" />
                                 </Border.Background>
                             </Border>
 
                             <Border x:Name="HoverLayer" CornerRadius="16" Opacity="0" BorderThickness="1" BorderBrush="#0D404752">
                                 <Border.Background>
-                                    <AcrylicBrush TintColor="#2A2A2A" 
-                                                  TintOpacity="0.5" 
-                                                  TintLuminosityOpacity="0.8" 
-                                                  FallbackColor="#2A2A2A" />
+                                    <AcrylicBrush TintColor="#2A2A2A" TintOpacity="0.5" TintLuminosityOpacity="0.8" FallbackColor="#2A2A2A" />
                                 </Border.Background>
                             </Border>
 
@@ -83,70 +76,12 @@
                         <Grid x:Name="RootGrid" UseLayoutRounding="False" Background="Transparent">
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup x:Name="CommonStates">
-                                    <VisualState x:Name="Normal">
-                                        <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetName="CoverLift" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.3">
-                                                <DoubleAnimation.EasingFunction>
-                                                    <QuadraticEase EasingMode="EaseOut"/>
-                                                </DoubleAnimation.EasingFunction>
-                                            </DoubleAnimation>
-                                            <DoubleAnimation Storyboard.TargetName="CoverShadow" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.3"/>
-                                            <DoubleAnimation Storyboard.TargetName="MoreButton" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2"/>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="PointerOver">
-                                        <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetName="CoverLift" Storyboard.TargetProperty="Y" To="-8" Duration="0:0:0.3">
-                                                <DoubleAnimation.EasingFunction>
-                                                    <QuadraticEase EasingMode="EaseOut"/>
-                                                </DoubleAnimation.EasingFunction>
-                                            </DoubleAnimation>
-                                            <DoubleAnimation Storyboard.TargetName="CoverShadow" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.3"/>
-                                            <DoubleAnimation Storyboard.TargetName="MoreButton" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.15"/>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="Pressed">
-                                        <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetName="CoverLift" Storyboard.TargetProperty="Y" To="-2" Duration="0:0:0.05"/>
-                                        </Storyboard>
-                                    </VisualState>
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="PointerOver" />
+                                    <VisualState x:Name="Pressed" />
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
-
                             <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"/>
-
-                            <Grid x:Name="CoverGrid" VerticalAlignment="Top" HorizontalAlignment="Stretch" IsHitTestVisible="False" RenderTransformOrigin="0.5,0.5" SizeChanged="Cover_SizeChanged">
-                                <Grid.RenderTransform>
-                                    <TranslateTransform x:Name="CoverLift"/>
-                                </Grid.RenderTransform>
-                                <Border x:Name="CoverShadow" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="12,0,12,-16" Height="20" CornerRadius="10" Opacity="0">
-                                    <Border.Background>
-                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
-                                            <GradientStop Color="#80000000" Offset="0"/>
-                                            <GradientStop Color="#00000000" Offset="1"/>
-                                        </LinearGradientBrush>
-                                    </Border.Background>
-                                </Border>
-                            </Grid>
-
-                            <Button x:Name="MoreButton" Opacity="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,8,8,0" Background="#99000000" Width="32" Height="32" CornerRadius="8" Canvas.ZIndex="20" BorderThickness="0">
-                                <Button.Flyout>
-                                    <MenuFlyout Placement="BottomEdgeAlignedRight">
-                                        <MenuFlyoutItem Text="Rename" Click="RenameBook_Click">
-                                            <MenuFlyoutItem.Icon>
-                                                <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xE8AC;"/>
-                                            </MenuFlyoutItem.Icon>
-                                        </MenuFlyoutItem>
-                                        <MenuFlyoutSeparator/>
-                                        <MenuFlyoutItem Text="Delete" Click="DeleteBook_Click" Foreground="#FF4444">
-                                            <MenuFlyoutItem.Icon>
-                                                <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xE74D;" Foreground="#FF4444"/>
-                                            </MenuFlyoutItem.Icon>
-                                        </MenuFlyoutItem>
-                                    </MenuFlyout>
-                                </Button.Flyout>
-                                <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xE10C;" FontSize="14" Foreground="White"/>
-                            </Button>
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -239,7 +174,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
     </Page.Resources>
 
     <ScrollViewer VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Disabled">
@@ -316,20 +250,10 @@
                                                     <TextBlock Text="{x:Bind ReadingProgressText, Mode=OneWay}" FontSize="15" FontWeight="Bold" Foreground="#75D1FF" FontFamily="{StaticResource InterFont}" VerticalAlignment="Bottom"/>
                                                     <TextBlock Text="{x:Bind PageProgressText, Mode=OneWay}" FontSize="13" Foreground="#889299" FontFamily="{StaticResource InterFont}" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                                 </Grid>
-                                                <ProgressBar Value="{x:Bind LastPageRead, Mode=OneWay}" 
-             Maximum="{x:Bind DisplayTotalPages, Mode=OneWay}" 
-             Height="8"
-             MinHeight="8"
-             CornerRadius="4" 
-             BorderThickness="0" 
-             Foreground="#75D1FF"
-             Background="#0E0E0E"
-             Margin="0,2,0,0">
+                                                <ProgressBar Value="{x:Bind LastPageRead, Mode=OneWay}" Maximum="{x:Bind DisplayTotalPages, Mode=OneWay}" Height="8" MinHeight="8" CornerRadius="4" BorderThickness="0" Foreground="#75D1FF" Background="#0E0E0E" Margin="0,2,0,0">
                                                     <ProgressBar.Resources>
                                                         <x:Double x:Key="ProgressBarTrackHeight">8</x:Double>
-
                                                         <SolidColorBrush x:Key="ProgressBarTrackFill" Color="#0E0E0E"/>
-
                                                         <SolidColorBrush x:Key="ProgressBarIndicatorForeground" Color="#75D1FF"/>
                                                     </ProgressBar.Resources>
                                                 </ProgressBar>
@@ -384,36 +308,66 @@
 
                     <DataTemplate x:DataType="models:Book">
                         <Button Style="{StaticResource LibraryCardStyle}" Click="BookCard_Click" Tag="{x:Bind}" PointerEntered="LibraryCard_PointerEntered" PointerExited="LibraryCard_PointerExited">
-                            <StackPanel Spacing="0">
 
-                                <Grid x:Name="CoverContainer" CornerRadius="12" SizeChanged="Cover_SizeChanged">
-                                    <Border Visibility="{x:Bind PlaceholderVisibility, Mode=OneWay}" CornerRadius="12">
+                            <Button.ContextFlyout>
+                                <MenuFlyout Placement="BottomEdgeAlignedRight">
+                                    <MenuFlyoutItem Text="Edit" Click="EditBook_Click">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xE70F;"/>
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutSeparator/>
+                                    <MenuFlyoutItem Text="Delete" Click="DeleteBook_Click" Foreground="#FF4444">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon FontFamily="{StaticResource SymbolFont}" Glyph="&#xE74D;" Foreground="#FF4444"/>
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                </MenuFlyout>
+                            </Button.ContextFlyout>
+
+                            <StackPanel Spacing="0">
+                                <Grid Margin="0,12,0,14">
+                                    <Border x:Name="CoverShadow" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="12,0,12,-16" Height="30" CornerRadius="10" Opacity="0">
                                         <Border.Background>
-                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                <GradientStop Color="#1A2D5A" Offset="0.0"/>
-                                                <GradientStop Color="#5127AD" Offset="0.6"/>
-                                                <GradientStop Color="#0080A8" Offset="1.0"/>
+                                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                                <GradientStop Color="#80000000" Offset="0"/>
+                                                <GradientStop Color="#00000000" Offset="1"/>
                                             </LinearGradientBrush>
                                         </Border.Background>
-                                        <TextBlock Text="{x:Bind Title}" FontFamily="{StaticResource ManropeFont}" FontSize="40" Opacity="0.2" FontWeight="Black" HorizontalAlignment="Center" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxLines="1"/>
                                     </Border>
-                                    <Border Visibility="{x:Bind CoverVisibility, Mode=OneWay}" CornerRadius="12">
-                                        <Border.Background>
-                                            <ImageBrush ImageSource="{x:Bind CoverImage, Mode=OneWay}" Stretch="UniformToFill"/>
-                                        </Border.Background>
-                                    </Border>
+
+                                    <Grid x:Name="CoverContainer" CornerRadius="12" SizeChanged="Cover_SizeChanged">
+                                        <Grid.RenderTransform>
+                                            <TranslateTransform />
+                                        </Grid.RenderTransform>
+                                        <Border Visibility="{x:Bind PlaceholderVisibility, Mode=OneWay}" CornerRadius="12">
+                                            <Border.Background>
+                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                    <GradientStop Color="#1A2D5A" Offset="0.0"/>
+                                                    <GradientStop Color="#5127AD" Offset="0.6"/>
+                                                    <GradientStop Color="#0080A8" Offset="1.0"/>
+                                                </LinearGradientBrush>
+                                            </Border.Background>
+                                            <TextBlock Text="{x:Bind Title}" FontFamily="{StaticResource ManropeFont}" FontSize="40" Opacity="0.2" FontWeight="Black" HorizontalAlignment="Center" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxLines="1"/>
+                                        </Border>
+
+                                        <Border Visibility="{x:Bind CoverVisibility, Mode=OneWay}" CornerRadius="12">
+                                            <Border.Background>
+                                                <ImageBrush ImageSource="{x:Bind CoverImage, Mode=OneWay}" Stretch="UniformToFill"/>
+                                            </Border.Background>
+                                        </Border>
+                                    </Grid>
                                 </Grid>
 
-                                <TextBlock x:Name="BookTitleText" Text="{x:Bind Title, Mode=OneWay}" Height="50" Margin="0,14,0,6" FontSize="16" FontWeight="Bold" Foreground="#E5E2E1" FontFamily="{StaticResource InterFont}" TextWrapping="Wrap" MaxLines="2" TextTrimming="WordEllipsis"/>
+                                <TextBlock x:Name="BookTitleText" Text="{x:Bind Title, Mode=OneWay}" Height="50" Margin="0,0,0,6" FontSize="18" FontWeight="Bold" Foreground="#E5E2E1" FontFamily="{StaticResource InterFont}" TextWrapping="Wrap" MaxLines="2" TextTrimming="WordEllipsis"/>
 
                                 <Grid Margin="0,0,0,8">
-                                    <TextBlock Text="{x:Bind ReadingProgressText, Mode=OneWay}" FontSize="12" FontWeight="Bold" Foreground="#75D1FF" FontFamily="{StaticResource InterFont}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+                                    <TextBlock Text="{x:Bind ReadingProgressText, Mode=OneWay}" FontSize="12" FontWeight="Medium" Foreground="#889299" FontFamily="{StaticResource InterFont}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
                                     <TextBlock Text="{x:Bind PageProgressText, Mode=OneWay}" FontSize="12" Foreground="#889299" FontFamily="{StaticResource InterFont}" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                 </Grid>
 
-                                <ProgressBar Value="{x:Bind LastPageRead, Mode=OneWay}" Maximum="{x:Bind DisplayTotalPages, Mode=OneWay}" Height="4" CornerRadius="2" BorderThickness="0">
+                                <ProgressBar Value="{x:Bind LastPageRead, Mode=OneWay}" Maximum="{x:Bind DisplayTotalPages, Mode=OneWay}" Height="4" CornerRadius="2" BorderThickness="0" Foreground="#5127AD">
                                     <ProgressBar.Resources>
-                                        <SolidColorBrush x:Key="ProgressBarIndicatorBackground" Color="#5127AD"/>
                                         <SolidColorBrush x:Key="ProgressBarTrackBackground" Color="#0E0E0E"/>
                                     </ProgressBar.Resources>
                                 </ProgressBar>
@@ -422,7 +376,6 @@
                     </DataTemplate>
                 </ItemsRepeater>
             </Grid>
-
         </StackPanel>
     </ScrollViewer>
 </Page>

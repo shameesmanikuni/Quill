@@ -12,9 +12,8 @@ namespace Quill.Pages
     public sealed partial class LibraryPage : Page
     {
         public LibraryViewModel ViewModel { get; } = new LibraryViewModel();
-
         private bool _sectionHovered = false;
-        private const double CardScrollWidth = 512; // 480px card + 32px gap
+        private const double CardScrollWidth = 512;
 
         public LibraryPage()
         {
@@ -26,28 +25,18 @@ namespace Quill.Pages
         {
             base.OnNavigatedTo(e);
             this.Frame.ForwardStack.Clear();
-
-            try
-            {
-                await ViewModel.LoadAsync();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Failed to load books: {ex.Message}");
-            }
+            try { await ViewModel.LoadAsync(); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Failed to load books: {ex.Message}"); }
         }
 
         // ════════════════════════════════════════════════════════════════════
-        // ASPECT RATIO HANDLER (Fix for Disappearing Covers)
+        // ASPECT RATIO HANDLER 
         // ════════════════════════════════════════════════════════════════════
         private void Cover_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (sender is FrameworkElement element)
             {
-                // Force a 3:4 aspect ratio (Height is 1.33x the responsive width)
                 double targetHeight = e.NewSize.Width * 1.3333;
-
-                // We MUST check for double.IsNaN because uninitialized Heights are NaN in WinUI!
                 if (double.IsNaN(element.Height) || Math.Abs(element.Height - targetHeight) > 1.0)
                 {
                     element.Height = targetHeight;
@@ -73,95 +62,60 @@ namespace Quill.Pages
 
         private void ContinueReadingScroll_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
-            if (_sectionHovered)
-                UpdateArrowVisibility();
+            if (_sectionHovered) UpdateArrowVisibility();
         }
 
         private void UpdateArrowVisibility()
         {
             if (!ViewModel.ShowContinueReadingArrows) return;
-
             var scroll = ContinueReadingScroll;
-            bool atStart = scroll.HorizontalOffset <= 1;
-            bool atEnd = Math.Abs(scroll.HorizontalOffset - scroll.ScrollableWidth) < 1;
-
-            LeftArrowBtn.Opacity = atStart ? 0.25 : 1.0;
-            RightArrowBtn.Opacity = atEnd ? 0.25 : 1.0;
+            LeftArrowBtn.Opacity = scroll.HorizontalOffset <= 1 ? 0.25 : 1.0;
+            RightArrowBtn.Opacity = Math.Abs(scroll.HorizontalOffset - scroll.ScrollableWidth) < 1 ? 0.25 : 1.0;
         }
 
-        private void LeftArrow_Click(object sender, RoutedEventArgs e)
-        {
-            var newOffset = Math.Max(0, ContinueReadingScroll.HorizontalOffset - CardScrollWidth);
-            ContinueReadingScroll.ChangeView(newOffset, null, null);
-        }
+        private void LeftArrow_Click(object sender, RoutedEventArgs e) =>
+            ContinueReadingScroll.ChangeView(Math.Max(0, ContinueReadingScroll.HorizontalOffset - CardScrollWidth), null, null);
 
-        private void RightArrow_Click(object sender, RoutedEventArgs e)
-        {
-            var newOffset = ContinueReadingScroll.HorizontalOffset + CardScrollWidth;
-            ContinueReadingScroll.ChangeView(newOffset, null, null);
-        }
+        private void RightArrow_Click(object sender, RoutedEventArgs e) =>
+            ContinueReadingScroll.ChangeView(ContinueReadingScroll.HorizontalOffset + CardScrollWidth, null, null);
 
         // ════════════════════════════════════════════════════════════════════
-        // CONTINUE READING — THUMBNAIL ZOOM
+        // HOVER EFFECTS & ANIMATIONS (OPTIMIZED)
         // ════════════════════════════════════════════════════════════════════
         private void ContinueReadingCard_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
-            if (sender is Button btn)
+            if (sender is Button btn && FindVisualChild<Image>(btn, "CoverImageElement")?.RenderTransform is ScaleTransform st)
             {
-                var imageElement = FindVisualChild<Image>(btn, "CoverImageElement");
-                if (imageElement?.RenderTransform is ScaleTransform scaleTransform)
-                {
-                    AnimateScale(scaleTransform, 1.05, 400);
-                }
+                Canvas.SetZIndex(btn, 100); // Prevent clipping
+                AnimateDouble(st, "ScaleX", 1.05, 400);
+                AnimateDouble(st, "ScaleY", 1.05, 400);
             }
         }
 
         private void ContinueReadingCard_PointerExited(object sender, PointerRoutedEventArgs e)
         {
-            if (sender is Button btn)
+            if (sender is Button btn && FindVisualChild<Image>(btn, "CoverImageElement")?.RenderTransform is ScaleTransform st)
             {
-                var imageElement = FindVisualChild<Image>(btn, "CoverImageElement");
-                if (imageElement?.RenderTransform is ScaleTransform scaleTransform)
-                {
-                    AnimateScale(scaleTransform, 1.0, 400);
-                }
+                Canvas.SetZIndex(btn, 0);
+                AnimateDouble(st, "ScaleX", 1.0, 400);
+                AnimateDouble(st, "ScaleY", 1.0, 400);
             }
         }
 
-        private void AnimateScale(ScaleTransform target, double toScale, int durationMs)
-        {
-            var storyboard = new Storyboard();
-            var duration = new Duration(TimeSpan.FromMilliseconds(durationMs));
-            var easing = new CubicEase { EasingMode = EasingMode.EaseOut };
-
-            var animX = new DoubleAnimation { To = toScale, Duration = duration, EnableDependentAnimation = true, EasingFunction = easing };
-            Storyboard.SetTarget(animX, target);
-            Storyboard.SetTargetProperty(animX, "ScaleX");
-
-            var animY = new DoubleAnimation { To = toScale, Duration = duration, EnableDependentAnimation = true, EasingFunction = easing };
-            Storyboard.SetTarget(animY, target);
-            Storyboard.SetTargetProperty(animY, "ScaleY");
-
-            storyboard.Children.Add(animX);
-            storyboard.Children.Add(animY);
-            storyboard.Begin();
-        }
-
-        // ════════════════════════════════════════════════════════════════════
-        // LIBRARY GRID — HOVER EFFECTS
-        // ════════════════════════════════════════════════════════════════════
         private void LibraryCard_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
             if (sender is Button btn)
             {
-                var titleText = FindVisualChild<TextBlock>(btn, "BookTitleText");
-                if (titleText != null) AnimateTextColor(titleText, Windows.UI.Color.FromArgb(255, 117, 209, 255), 300);
+                // FIXED: Forces the hovered card to the absolute front so it doesn't slide under the UI above it
+                Canvas.SetZIndex(btn, 100);
 
-                var coverContainer = FindVisualChild<Grid>(btn, "CoverContainer");
-                if (coverContainer != null)
+                if (FindVisualChild<TextBlock>(btn, "BookTitleText") is TextBlock text) AnimateTextColor(text, Windows.UI.Color.FromArgb(255, 117, 209, 255), 300);
+                if (FindVisualChild<Border>(btn, "CoverShadow") is Border shadow) AnimateDouble(shadow, "Opacity", 1.0, 300);
+
+                if (FindVisualChild<Grid>(btn, "CoverContainer") is Grid cover)
                 {
-                    EnsureTranslateTransform(coverContainer);
-                    if (coverContainer.RenderTransform is TranslateTransform tt) AnimateTranslateY(tt, -8, 300);
+                    EnsureTranslateTransform(cover);
+                    AnimateDouble(cover.RenderTransform, "Y", -8, 300);
                 }
             }
         }
@@ -170,16 +124,45 @@ namespace Quill.Pages
         {
             if (sender is Button btn)
             {
-                var titleText = FindVisualChild<TextBlock>(btn, "BookTitleText");
-                if (titleText != null) AnimateTextColor(titleText, Windows.UI.Color.FromArgb(255, 229, 226, 225), 300);
+                Canvas.SetZIndex(btn, 0); // Reset depth
 
-                var coverContainer = FindVisualChild<Grid>(btn, "CoverContainer");
-                if (coverContainer != null)
+                if (FindVisualChild<TextBlock>(btn, "BookTitleText") is TextBlock text) AnimateTextColor(text, Windows.UI.Color.FromArgb(255, 229, 226, 225), 300);
+                if (FindVisualChild<Border>(btn, "CoverShadow") is Border shadow) AnimateDouble(shadow, "Opacity", 0.0, 300);
+
+                if (FindVisualChild<Grid>(btn, "CoverContainer") is Grid cover)
                 {
-                    EnsureTranslateTransform(coverContainer);
-                    if (coverContainer.RenderTransform is TranslateTransform tt) AnimateTranslateY(tt, 0, 300);
+                    EnsureTranslateTransform(cover);
+                    AnimateDouble(cover.RenderTransform, "Y", 0, 300);
                 }
             }
+        }
+
+        // OPTIMIZATION: One unified method for Opacity, Translate Y, and Scale animations
+        private void AnimateDouble(DependencyObject target, string propertyPath, double toValue, int durationMs)
+        {
+            var storyboard = new Storyboard();
+            var anim = new DoubleAnimation
+            {
+                To = toValue,
+                Duration = new Duration(TimeSpan.FromMilliseconds(durationMs)),
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut },
+                EnableDependentAnimation = true
+            };
+            Storyboard.SetTarget(anim, target);
+            Storyboard.SetTargetProperty(anim, propertyPath);
+            storyboard.Children.Add(anim);
+            storyboard.Begin();
+        }
+
+        private void AnimateTextColor(TextBlock target, Windows.UI.Color toColor, int durationMs)
+        {
+            if (target.Foreground is not SolidColorBrush brush) { brush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 229, 226, 225)); target.Foreground = brush; }
+            var storyboard = new Storyboard();
+            var anim = new ColorAnimation { To = toColor, Duration = new Duration(TimeSpan.FromMilliseconds(durationMs)), EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }, EnableDependentAnimation = true };
+            Storyboard.SetTarget(anim, brush);
+            Storyboard.SetTargetProperty(anim, "Color");
+            storyboard.Children.Add(anim);
+            storyboard.Begin();
         }
 
         private static void EnsureTranslateTransform(FrameworkElement element)
@@ -191,45 +174,8 @@ namespace Quill.Pages
             }
         }
 
-        private void AnimateTranslateY(TranslateTransform target, double toY, int durationMs)
-        {
-            var storyboard = new Storyboard();
-            var anim = new DoubleAnimation
-            {
-                To = toY,
-                Duration = new Duration(TimeSpan.FromMilliseconds(durationMs)),
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut },
-                EnableDependentAnimation = true
-            };
-            Storyboard.SetTarget(anim, target);
-            Storyboard.SetTargetProperty(anim, "Y");
-            storyboard.Children.Add(anim);
-            storyboard.Begin();
-        }
-
-        private void AnimateTextColor(TextBlock target, Windows.UI.Color toColor, int durationMs)
-        {
-            if (target.Foreground is not SolidColorBrush brush)
-            {
-                brush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 229, 226, 225));
-                target.Foreground = brush;
-            }
-            var storyboard = new Storyboard();
-            var anim = new ColorAnimation
-            {
-                To = toColor,
-                Duration = new Duration(TimeSpan.FromMilliseconds(durationMs)),
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut },
-                EnableDependentAnimation = true
-            };
-            Storyboard.SetTarget(anim, brush);
-            Storyboard.SetTargetProperty(anim, "Color");
-            storyboard.Children.Add(anim);
-            storyboard.Begin();
-        }
-
         // ════════════════════════════════════════════════════════════════════
-        // HELPERS & NAVIGATION
+        // ACTIONS & NAVIGATION
         // ════════════════════════════════════════════════════════════════════
         public async void RefreshAfterImport() => await ViewModel.RefreshAsync();
 
@@ -242,12 +188,12 @@ namespace Quill.Pages
             }
         }
 
-        private async void RenameBook_Click(object sender, RoutedEventArgs e)
+        private async void EditBook_Click(object sender, RoutedEventArgs e)
         {
             if (sender is MenuFlyoutItem menuItem && menuItem.DataContext is Quill.Models.Book book)
             {
                 var inputBox = new TextBox { PlaceholderText = "Enter new title", Text = book.Title, SelectionStart = 0, SelectionLength = book.Title?.Length ?? 0 };
-                var dialog = new ContentDialog { Title = "Rename Book", PrimaryButtonText = "Rename", CloseButtonText = "Cancel", DefaultButton = ContentDialogButton.Primary, XamlRoot = this.XamlRoot, Content = inputBox };
+                var dialog = new ContentDialog { Title = "Edit Book", PrimaryButtonText = "Save", CloseButtonText = "Cancel", DefaultButton = ContentDialogButton.Primary, XamlRoot = this.XamlRoot, Content = inputBox };
                 if (await dialog.ShowAsync() == ContentDialogResult.Primary)
                 {
                     var newTitle = inputBox.Text?.Trim();
@@ -263,9 +209,7 @@ namespace Quill.Pages
         private void BookCard_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.Tag is Quill.Models.Book book)
-            {
                 this.Frame.Navigate(typeof(Quill.Pages.ReaderPage), book, new SuppressNavigationTransitionInfo());
-            }
         }
 
         private T? FindVisualChild<T>(DependencyObject parent, string name) where T : class
