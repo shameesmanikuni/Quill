@@ -316,10 +316,21 @@
                                                     <TextBlock Text="{x:Bind ReadingProgressText, Mode=OneWay}" FontSize="15" FontWeight="Bold" Foreground="#75D1FF" FontFamily="{StaticResource InterFont}" VerticalAlignment="Bottom"/>
                                                     <TextBlock Text="{x:Bind PageProgressText, Mode=OneWay}" FontSize="13" Foreground="#889299" FontFamily="{StaticResource InterFont}" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                                 </Grid>
-                                                <ProgressBar Value="{x:Bind LastPageRead, Mode=OneWay}" Maximum="{x:Bind DisplayTotalPages, Mode=OneWay}" Height="8" CornerRadius="4" BorderThickness="0" Margin="0,2,0,0">
+                                                <ProgressBar Value="{x:Bind LastPageRead, Mode=OneWay}" 
+             Maximum="{x:Bind DisplayTotalPages, Mode=OneWay}" 
+             Height="8"
+             MinHeight="8"
+             CornerRadius="4" 
+             BorderThickness="0" 
+             Foreground="#75D1FF"
+             Background="#0E0E0E"
+             Margin="0,2,0,0">
                                                     <ProgressBar.Resources>
-                                                        <SolidColorBrush x:Key="ProgressBarIndicatorBackground" Color="#75D1FF"/>
-                                                        <SolidColorBrush x:Key="ProgressBarTrackBackground" Color="#0E0E0E"/>
+                                                        <x:Double x:Key="ProgressBarTrackHeight">8</x:Double>
+
+                                                        <SolidColorBrush x:Key="ProgressBarTrackFill" Color="#0E0E0E"/>
+
+                                                        <SolidColorBrush x:Key="ProgressBarIndicatorForeground" Color="#75D1FF"/>
                                                     </ProgressBar.Resources>
                                                 </ProgressBar>
                                             </StackPanel>
